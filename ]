@@ -1,0 +1,152 @@
+#include <algorithm>
+#include <iostream>
+#include "Lexer.h"
+
+using std::string;
+using std::vector;
+using std::istringstream;
+using std::cout;
+using std::ostream;
+using std::set;
+using std::isalpha;
+using std::isdigit;
+using std::stod;
+using std::runtime_error;
+using std::logic_error;
+
+using tok_t::TokType;
+using tok_t::str_to_tok;
+
+namespace {
+const set<string> ops = {
+	"=", "+", "-", "*", "/", "(", ")", "=="
+};
+
+const set<string> keys = {
+	"let"
+}; // TODO: Change structure to support a map to classes
+set<char> valid_chars(const set<string> &ss) {
+	set<char> valid_chars;
+	for (auto &s : ss)
+		for (auto &ch : s)
+			valid_chars.insert(ch);
+	return valid_chars;
+}
+const set<char> op_chars = valid_chars(ops);
+} // namespace
+
+ostream &operator<<(ostream &os, const Lexer &lex) {
+	os << "[";
+	auto it = lex.toks.cbegin();
+	while (it != lex.toks.cend()) {
+		os << *it << (++it != lex.toks.cend() ? ", " : "");
+	}
+	os << "]";
+	return os;
+}
+
+Lexer::Lexer() { }
+
+Lexer::Lexer(const string &_content) { *this = _content; }
+
+Lexer &Lexer::operator=(const string &_content) {
+	content = _content;
+	curr_it = _content.cbegin();
+	tokenize();
+	return *this;
+}
+
+
+Tok Lexer::next_tok() {
+	// Forgets whitespaces
+	while (*curr_it == ' ') { ++curr_it; }
+	const auto beg = curr_it;
+	const auto op_end = check_op();
+	const auto key_end = check_key();
+	const auto id_lit_end = check_id_lit();
+	const auto str_lit_end = check_str_lit();
+	const auto num_lit_end = check_num_lit();
+
+	// cout << *op_end << ' ' << *var_or_key_end << ' ' << *lit_end << '\n';
+	
+	TokType type;
+	if (op_end != curr_it) 
+		{ curr_it = op_end; return Tok(string(beg, op_end)); }
+	else if (key_end != curr_it) 
+		{ curr_it = key_end; return Tok(string(beg, key_end)); }
+	else if (id_lit_end != curr_it) 
+		{ curr_it = id_lit_end; return Tok(tok_t::IDENTIFIER, 
+								string(beg, id_lit_end)); }
+	else if (str_lit_end != curr_it) 
+		{ curr_it = str_lit_end; return Tok(tok_t::STRING, 
+								 string(beg, str_lit_end)); }
+	else if (num_lit_end != curr_it) 
+		{ curr_it = num_lit_end; return Tok(tok_t::NUMBER, 
+								 stod(string(beg, num_lit_end))); }
+	throw logic_error("No matching case for current token");
+}
+
+void Lexer::tokenize() {
+	toks.clear();
+	while (curr_it != content.cend()) 
+		toks.push_back(next_tok());
+}
+
+Lexer::sci Lexer::check_op() const {
+	auto tmp_it = curr_it;
+	while (tmp_it != content.cend() && is_op(*tmp_it)) ++tmp_it;
+	return tmp_it;
+}
+
+Lexer::sci Lexer::check_key() const {
+	if (!isalpha(*curr_it)) return curr_it;
+	auto tmp_it = curr_it;
+
+	// Doesn't encounter an operator or space
+	do ++tmp_it; while (tmp_it != content.cend() && !is_op(*tmp_it) && *tmp_it != ' ');
+	if (str_to_tok.find(string(curr_it, tmp_it)) == str_to_tok.cend()) return curr_it;
+	return tmp_it;
+}
+
+Lexer::sci Lexer::check_id_lit() const {
+	if (!isalpha(*curr_it)) return curr_it;
+	auto tmp_it = curr_it;
+
+	// Doesn't encounter an operator or space
+	do ++tmp_it; while (tmp_it != content.cend() && !is_op(*tmp_it) && *tmp_it != ' ');
+	if (str_to_tok.find(string(curr_it, tmp_it)) == str_to_tok.cend()) return tmp_it;
+	return curr_it;
+}
+
+Lexer::sci Lexer::check_str_lit() const {
+	if (*curr_it != '"') return curr_it;
+	auto tmp_it = curr_it;
+
+	do { ++tmp_it; cout << *tmp_it == '"' << std::endl; } while (tmp_it != content.cend() && *tmp_it != '"');
+	if (tmp_it == content.cend()) throw runtime_error("Missing \"");
+	return tmp_it;
+}
+
+Lexer::sci Lexer::check_num_lit() const {
+	bool allow_dec = true;
+	// Goes on until there are two decimals, or there is a non-digit character
+	auto tmp_it = curr_it;
+	while (tmp_it != content.cend()
+		&& (isdigit(*tmp_it) || *tmp_it == '.')) {
+
+		if (*tmp_it == '.' && !allow_dec)
+			throw runtime_error("Too many decimals");
+		else if (*tmp_it == '.')
+			allow_dec = false;
+		tmp_it++;
+	}
+	return tmp_it;
+}
+
+bool Lexer::is_op(const char &c) {
+	return op_chars.find(c) != op_chars.cend();
+}
+
+bool Lexer::is_key(const string &s) {
+	return keys.find(s) != keys.cend();
+}
