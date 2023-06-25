@@ -1,10 +1,17 @@
 #include <memory>
 #include <iostream>
-#include "PrimObj.h"
+#include <list>
+#include <string>
+#include "Headers/Exception.h"
+#include "Headers/PrimObj.h"
+#include "Headers/Stmt.h"
+#include "Headers/Interpreter.h"
 
-using std::shared_ptr;
 using std::make_shared;
 using std::runtime_error;
+using std::list;
+using std::dynamic_pointer_cast;
+using std::string;
 
 PrimObjPtr PrimObj::operator-() const { 
 	throw runtime_error("Type does not support unary '-' operator");
@@ -56,132 +63,121 @@ PrimObjPtr DoubleObj::operator!() const {
 	return make_shared<DoubleObj>(!data);
 }
 PrimObjPtr DoubleObj::operator+(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<DoubleObj>(data + double_rhs.data);
+	return make_shared<DoubleObj>(data + rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator-(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<DoubleObj>(data - double_rhs.data);
+	return make_shared<DoubleObj>(data - rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator*(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<DoubleObj>(data * double_rhs.data);
+	return make_shared<DoubleObj>(data * rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator/(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	if (double_rhs.data == 0) throw runtime_error("Division by 0");
-	return make_shared<DoubleObj>(data / double_rhs.data);
+	return make_shared<DoubleObj>(data / rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator>(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data > double_rhs.data);
+	return make_shared<BoolObj>(data > rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator>=(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data >= double_rhs.data);
+	return make_shared<BoolObj>(data >= rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator<(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data < double_rhs.data);
+	return make_shared<BoolObj>(data < rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator<=(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data <= double_rhs.data);
+	return make_shared<BoolObj>(data <= rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator==(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data == double_rhs.data);
+	return make_shared<BoolObj>(data == rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator!=(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data != double_rhs.data);
+	return make_shared<BoolObj>(data != rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator&&(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data && double_rhs.data);
+	return make_shared<BoolObj>(to_bool() && rhs.to_bool());
 }
 PrimObjPtr DoubleObj::operator||(const PrimObj &rhs) const { 
-	const DoubleObj &double_rhs = dynamic_cast<const DoubleObj&>(rhs);
-	return make_shared<BoolObj>(data || double_rhs.data);
+	return make_shared<BoolObj>(to_bool() || rhs.to_bool());
 }
 
 PrimObjPtr StrObj::operator+(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<StrObj>(data + str_rhs.data);
+	return make_shared<StrObj>(data + rhs.to_str());
 }
 PrimObjPtr StrObj::operator>(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(data > str_rhs.data);
+	return make_shared<BoolObj>(data > rhs.to_str());
 }
 PrimObjPtr StrObj::operator>=(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(data >= str_rhs.data);
+	return make_shared<BoolObj>(data >= rhs.to_str());
 }
 PrimObjPtr StrObj::operator<(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(data < str_rhs.data);
+	return make_shared<BoolObj>(data < rhs.to_str());
 }
 PrimObjPtr StrObj::operator<=(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(data <= str_rhs.data);
+	return make_shared<BoolObj>(data <= rhs.to_str());
 }
 PrimObjPtr StrObj::operator==(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(data == str_rhs.data);
+	return make_shared<BoolObj>(data == rhs.to_str());
 }
 PrimObjPtr StrObj::operator!=(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(data != str_rhs.data);
+	return make_shared<BoolObj>(data != rhs.to_str());
 }
 PrimObjPtr StrObj::operator&&(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(to_bool() && str_rhs.to_bool());
+	return make_shared<BoolObj>(to_bool() && rhs.to_bool());
 }
 PrimObjPtr StrObj::operator||(const PrimObj &rhs) const { 
-	const StrObj &str_rhs = dynamic_cast<const StrObj&>(rhs);
-	return make_shared<BoolObj>(to_bool() != str_rhs.to_bool());
+	return make_shared<BoolObj>(to_bool() || rhs.to_bool());
 }
 
 PrimObjPtr BoolObj::operator!() const { 
 	return make_shared<BoolObj>(!data);
 }
 PrimObjPtr BoolObj::operator+(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data + bool_rhs.data);
+	return make_shared<BoolObj>(data + rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator*(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data * bool_rhs.data);
+	return make_shared<BoolObj>(data * rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator>(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data > bool_rhs.data);
+	return make_shared<BoolObj>(data > rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator>=(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data >= bool_rhs.data);
+	return make_shared<BoolObj>(data >= rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator<(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data < bool_rhs.data);
+	return make_shared<BoolObj>(data < rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator<=(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data <= bool_rhs.data);
+	return make_shared<BoolObj>(data <= rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator==(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data == bool_rhs.data);
+	return make_shared<BoolObj>(data == rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator!=(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data != bool_rhs.data);
+	return make_shared<BoolObj>(data != rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator&&(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data && bool_rhs.data);
+	return make_shared<BoolObj>(data && rhs.to_bool());
 }
 PrimObjPtr BoolObj::operator||(const PrimObj &rhs) const { 
-	const BoolObj &bool_rhs = dynamic_cast<const BoolObj&>(rhs);
-	return make_shared<BoolObj>(data || bool_rhs.data);
+	return make_shared<BoolObj>(data || rhs.to_bool());
+}
+
+string FuncObj::to_str() const { 
+  const string name = dynamic_pointer_cast<StrObj>(decl->name->lit_obj)->data;
+  return "<fn " + name + '>';
+}
+unsigned FuncObj::arity() const { return decl->params.size(); }
+
+PrimObjPtr FuncObj::call(const list<PrimObjPtr> &args) {
+  // Every call gets its own environment 
+  // This is necessary for recursion to work
+  const EnvPtr env = make_shared<Env>(Interpreter::global_env);
+
+  auto param_it = decl->params.cbegin();
+  auto arg_it = args.cbegin();
+  while (param_it != decl->params.cend() && arg_it != args.cend())
+    env->define(*(param_it++), *(arg_it++));
+
+  try { decl->body->exec(env); }
+  catch (ReturnExcept return_val) { return return_val.get_val(); }
+  return make_shared<DoubleObj>(0);
 }

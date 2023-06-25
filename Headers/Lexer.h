@@ -25,17 +25,17 @@ public:
 
 private:
 	sci cur_it;
-	std::list<Tok> toks;
+	std::list<TokPtr> toks;
 	std::string content;
 
-	inline bool match(char);
-	Tok next_tok();
+	inline bool match(const char);
+	TokPtr next_tok();
 	void tokenize();
 
 	// static inline bool is_op(const char&);
 	// static inline bool is_key(const std::string&);
 
-	std::set<char> valid_chars(const std::set<std::string>&) const;
+	// std::set<const char> valid_chars(const std::set<const std::string>&) const;
 	sci check_op() const;
 	sci check_key() const;
 	sci check_id_lit() const;

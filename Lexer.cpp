@@ -1,7 +1,8 @@
 #include <algorithm>
 #include <iostream>
-#include "Lexer.h"
-#include "Tok.h"
+#include <cctype>
+#include "Headers/Lexer.h"
+#include "Headers/Tok.h"
 
 using std::string;
 using std::vector;
@@ -14,6 +15,8 @@ using std::isdigit;
 using std::stod;
 using std::runtime_error;
 using std::logic_error;
+using std::make_shared;
+using std::isspace;
 
 using tok_t::TokType;
 using tok_t::str_to_tok;
@@ -22,9 +25,8 @@ using tok_t::some_type_same_len;
 ostream &operator<<(ostream &os, const Lexer &lex) {
 	os << "[";
 	auto it = lex.toks.cbegin();
-	while (it != lex.toks.cend()) {
-		os << '(' << *it << " | " << it->type << ')' << (++it != lex.toks.cend() ? ", " : "");
-	}
+	while (it != lex.toks.cend())
+		os << '(' << **it << " | " << (*it)->type << ')' << (++it != lex.toks.cend() ? ", " : "");
 	os << "]";
 	return os;
 }
@@ -41,15 +43,16 @@ Lexer &Lexer::operator=(const string &_content) {
 }
 
 
-bool Lexer::match(char ch) {
+bool Lexer::match(const char ch) {
 	if (cur_it != content.cend() && *cur_it == ch) 
 		{ ++cur_it; return true; }
 	return false;
 }
 
-Tok Lexer::next_tok() {
+TokPtr Lexer::next_tok() {
 	// Forgets whitespaces
-	while (*cur_it == ' ') ++cur_it;
+	while (isspace(static_cast<unsigned char>(*cur_it))) ++cur_it;
+  // cout << *cur_it;
 	const auto beg = cur_it;
 	const auto op_end = check_op();
 	const auto key_end = check_key();
@@ -61,20 +64,21 @@ Tok Lexer::next_tok() {
 
 	TokType type;
 	if (op_end != cur_it) 
-		{ cur_it = op_end; return Tok(string(beg, op_end)); }
+		{ cur_it = op_end; return make_shared<Tok>(string(beg, op_end)); }
 	else if (key_end != cur_it) 
-		{ cur_it = key_end; return Tok(string(beg, key_end)); }
+		{ cur_it = key_end; return make_shared<Tok>(string(beg, key_end)); }
 	else if (id_lit_end != cur_it) 
-		{ cur_it = id_lit_end; return Tok(TokType::IDENTIFIER, 
+		{ cur_it = id_lit_end; return make_shared<Tok>(TokType::IDENTIFIER, 
 								string(beg, id_lit_end)); }
 	// String literal needs to trim off the excess
 	else if (str_lit_end != cur_it) 
-		{ cur_it = str_lit_end; return Tok(TokType::STRING, 
+		{ cur_it = str_lit_end; return make_shared<Tok>(TokType::STRING, 
 								 string(beg+1, str_lit_end-1)); }
 	else if (num_lit_end != cur_it) 
-		{ cur_it = num_lit_end; return Tok(TokType::NUMBER, 
+		{ cur_it = num_lit_end; return make_shared<Tok>(TokType::NUMBER, 
 								 stod(string(beg, num_lit_end))); }
-	throw logic_error("No matching case for current token");
+  // cout << '\n' << toascii(*cur_it) << std::endl;
+	throw logic_error("No matching case for current character"); 
 	
 }
 
@@ -82,7 +86,7 @@ void Lexer::tokenize() {
 	toks.clear();
 	while (cur_it != content.cend()) 
 		toks.push_back(next_tok());
-	toks.push_back(Tok(TokType::END));
+	toks.push_back(make_shared<Tok>(TokType::END));
 }
 
 Lexer::sci Lexer::check_op() const {
@@ -146,11 +150,3 @@ Lexer::sci Lexer::check_num_lit() const {
 	}
 	return tmp_it;
 }
-
-// bool Lexer::is_op(const char &c) {
-// 	return op_chars.find(c) != op_chars.cend();
-// }
-//
-// bool Lexer::is_key(const string &s) {
-// 	return keys.find(s) != keys.cend();
-// }

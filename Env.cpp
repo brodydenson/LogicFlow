@@ -1,24 +1,24 @@
 #include <iostream>
 #include <memory>
-#include "Env.h"
+#include "Headers/Env.h"
 
 using std::runtime_error;
 using std::dynamic_pointer_cast;
 using std::string;
 using tok_t::TokType;
 
-PrimObjPtr Env::define(const Tok &name, PrimObjPtr val) {
-	if (name.type != TokType::IDENTIFIER)
+PrimObjPtr Env::define(TokPtr name, PrimObjPtr val) {
+	if (name->type != TokType::IDENTIFIER)
 		throw runtime_error("Token type must be of type identifier");
-	string name_str = dynamic_pointer_cast<StrObj>(name.lit_obj)->data;
+	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 	vals[name_str] = val;
 	return val;
 }
 
-PrimObjPtr Env::assign(const Tok &name, PrimObjPtr val) {
-	if (name.type != TokType::IDENTIFIER)
+PrimObjPtr Env::assign(TokPtr name, PrimObjPtr val) {
+	if (name->type != TokType::IDENTIFIER)
 		throw runtime_error("Token type must be of type identifier");
-	string name_str = dynamic_pointer_cast<StrObj>(name.lit_obj)->data;
+	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 
 	auto found = vals.find(name_str);
 	if (found == vals.cend()) {
@@ -31,10 +31,10 @@ PrimObjPtr Env::assign(const Tok &name, PrimObjPtr val) {
 	return val;
 }
 
-PrimObjPtr Env::get(const Tok &name) const {
-	if (name.type != TokType::IDENTIFIER)
+PrimObjPtr Env::get(TokPtr name) const {
+	if (name->type != TokType::IDENTIFIER)
 		throw runtime_error("Token type must be of type identifier");
-	string name_str = dynamic_pointer_cast<StrObj>(name.lit_obj)->data;
+	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 
 	auto found = vals.find(name_str);
 	if (found == vals.cend()) {
@@ -46,9 +46,9 @@ PrimObjPtr Env::get(const Tok &name) const {
 	return found->second;
 }
 
-bool Env::contains(const Tok &name) const {
-	if (name.type != TokType::IDENTIFIER)
+bool Env::contains(TokPtr name) const {
+	if (name->type != TokType::IDENTIFIER)
 		throw runtime_error("Token type must be of type identifier");
-	string name_str = dynamic_pointer_cast<StrObj>(name.lit_obj)->data;
+	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 	return vals.find(name_str) != vals.cend();
 }

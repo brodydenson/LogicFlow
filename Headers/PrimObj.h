@@ -10,10 +10,11 @@ typedef std::shared_ptr<PrimObj> PrimObjPtr;
 
 struct PrimObj {
 	friend std::ostream &operator<<(std::ostream &os, const PrimObj &obj) 
-		{ os << obj.to_string(); return os; }
+		{ os << obj.to_str(); return os; }
 	virtual ~PrimObj() = default;
-	virtual std::string to_string() const;
-	virtual bool to_bool() const;
+	virtual std::string to_str() const = 0;
+  virtual double to_double() const = 0;
+	virtual bool to_bool() const = 0;
 	virtual PrimObjPtr operator-() const;
 	virtual PrimObjPtr operator!() const;
 	virtual PrimObjPtr operator+(const PrimObj&) const;
@@ -32,7 +33,8 @@ struct PrimObj {
 
 struct DoubleObj : public PrimObj {
 	DoubleObj(double _data) : data(_data) { } // nonexplicit
-	std::string to_string() const { return std::to_string(data); }
+	std::string to_str() const { return std::to_string(data); }
+  double to_double() const { return data; }
 	bool to_bool() const { return data != 0; }
 	PrimObjPtr operator-() const;
 	PrimObjPtr operator!() const;
@@ -49,12 +51,13 @@ struct DoubleObj : public PrimObj {
 	PrimObjPtr operator&&(const PrimObj&) const;
 	PrimObjPtr operator||(const PrimObj&) const;
 
-	double data;
+	const double data;
 };
 
 struct StrObj : public PrimObj {
 	StrObj(const std::string &_data) : data(_data) { } // nonexplicit
-	std::string to_string() const { return data; }
+	std::string to_str() const { return data; }
+  double to_double() const { throw std::runtime_error("No type conversion from string to double"); }
 	bool to_bool() const { return data.length() != 0; }
 	PrimObjPtr operator+(const PrimObj&) const;
 	PrimObjPtr operator>(const PrimObj&) const;
@@ -66,17 +69,17 @@ struct StrObj : public PrimObj {
 	PrimObjPtr operator&&(const PrimObj&) const;
 	PrimObjPtr operator||(const PrimObj&) const;
 
-	std::string data;
+	const std::string data;
 };
 
 struct BoolObj : public PrimObj {
 	BoolObj(bool _data) : data(_data) { } // nonexplicit
-	std::string to_string() const { return std::to_string(data); }
+	std::string to_str() const { return std::to_string(data); }
+  double to_double() const { throw std::runtime_error("No type conversion from bool to double"); }
 	bool to_bool() const { return data; }
 	PrimObjPtr operator!() const;
 	PrimObjPtr operator+(const PrimObj&) const;
 	PrimObjPtr operator*(const PrimObj&) const;
-	PrimObjPtr operator/(const PrimObj&) const;
 	PrimObjPtr operator>(const PrimObj&) const;
 	PrimObjPtr operator>=(const PrimObj&) const;
 	PrimObjPtr operator<(const PrimObj&) const;
@@ -86,21 +89,31 @@ struct BoolObj : public PrimObj {
 	PrimObjPtr operator&&(const PrimObj&) const;
 	PrimObjPtr operator||(const PrimObj&) const;
 
-	bool data;
+	const bool data;
 };
 
-struct FuncObj : public PrimObj {
-	FuncObj();
+struct CallableObj : public PrimObj {
+	virtual ~CallableObj() = default;
+
+	bool to_bool() const { return true; }
+  double to_double() const { throw std::runtime_error("No type conversion from callable to double"); }
+
+	virtual std::string to_str() const { return "<callable>"; }
+	virtual unsigned arity() const = 0;
+
+	virtual PrimObjPtr call(const std::list<PrimObjPtr> &args) = 0;
 };
 
-// struct CallableObj : public PrimObj {
-// 	CallableObj(unsigned _arity) { } // nonexplicit
-// 	std::string to_string() const { return "<function>"; }
-// 	bool to_bool() const { return true; }
-//
-// 	PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
-//
-// 	unsigned arity;
-// };
+class FuncStmt;
+struct FuncObj : public CallableObj {
+  const std::shared_ptr<FuncStmt> decl;
+
+  FuncObj(const std::shared_ptr<FuncStmt> &_decl) : decl(_decl) { }
+
+  std::string to_str() const;
+  unsigned arity() const;
+
+  PrimObjPtr call(const std::list<PrimObjPtr> &args);
+};
 
 #endif

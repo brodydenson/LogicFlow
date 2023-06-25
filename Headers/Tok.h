@@ -36,9 +36,9 @@ extern std::map<TokType, std::string> tok_to_str;
 class Tok {
 public:
 	friend std::ostream &operator<<(std::ostream &os, const Tok &tok)
-		{ os << tok.to_string(); return os; }
+		{ os << tok.to_str(); return os; }
 
-	Tok(const Tok &tok) = default;
+	Tok(const Tok&) = default;
 
 	Tok(tok_t::TokType _type) : type(_type) { } 
 
@@ -50,10 +50,11 @@ public:
 	Tok(const std::string &type_str)
 		: type(tok_t::str_to_tok[type_str]) { } 
 
-	std::string to_string() const;
+	std::string to_str() const;
 
 	const tok_t::TokType type;
 	const std::shared_ptr<PrimObj> lit_obj;
 };
+typedef std::shared_ptr<Tok> TokPtr;
 
 #endif

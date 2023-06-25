@@ -1,6 +1,6 @@
 #include <map>
 #include <string>
-#include "Tok.h"
+#include "Headers/Tok.h"
 
 using std::map;
 using std::string;
@@ -8,12 +8,12 @@ using std::ostream;
 using tok_t::tok_to_str;
 using tok_t::TokType;
 
-string Tok::to_string() const {
+string Tok::to_str() const {
 	string output;
 	if (type == TokType::IDENTIFIER ||
 		 type == TokType::STRING ||
 		 type == TokType::NUMBER)
-		output += lit_obj->to_string();
+		output += lit_obj->to_str();
 	else
 		output += tok_to_str[type];
 	return output;
