@@ -2,10 +2,10 @@
 #include <iostream>
 #include <list>
 #include <string>
-#include "Headers/Exception.h"
-#include "Headers/PrimObj.h"
-#include "Headers/Stmt.h"
-#include "Headers/Interpreter.h"
+#include "include/Exception.h"
+#include "include/PrimObj.h"
+#include "include/Stmt.h"
+#include "include/Interpreter.h"
 
 using std::make_shared;
 using std::runtime_error;
@@ -72,6 +72,8 @@ PrimObjPtr DoubleObj::operator*(const PrimObj &rhs) const {
 	return make_shared<DoubleObj>(data * rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator/(const PrimObj &rhs) const { 
+  if (rhs.to_double() == 0)
+    throw runtime_error("Division by zero");
 	return make_shared<DoubleObj>(data / rhs.to_double());
 }
 PrimObjPtr DoubleObj::operator>(const PrimObj &rhs) const { 

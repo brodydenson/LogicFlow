@@ -1,10 +1,11 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
-#include "Headers/Expr.h"
-#include "Headers/Env.h"
-#include "Headers/Parser.h"
-#include "Headers/PrimObj.h"
+#include "include/Exception.h"
+#include "include/Expr.h"
+#include "include/Env.h"
+#include "include/Parser.h"
+#include "include/PrimObj.h"
 
 using std::string;
 using std::initializer_list;
@@ -15,6 +16,8 @@ using std::dynamic_pointer_cast;
 using std::cout;
 using std::runtime_error;
 using std::list;
+using std::cerr;
+using std::endl;
 using tok_t::TokType;
 
 Parser::Parser() { }
@@ -32,7 +35,12 @@ Parser &Parser::operator=(const string &s) {
 list<StmtPtr> Parser::parse() {
 	list<StmtPtr> stmts;
 	while (!check(TokType::END)) {
-		stmts.push_back(declaration());
+    try {
+      stmts.push_back(declaration());
+    } catch (ProgError e) {
+      cerr << "Syntax Error: " << e.err_msg() << endl;
+      exit(0);
+    }
 	}
 	return stmts;
 }
@@ -188,7 +196,7 @@ ExprPtr Parser::assignment() {
 
 	if (match({TokType::EQUAL})) {
 		shared_ptr<Var> var = dynamic_pointer_cast<Var>(expr);
-		if (var == nullptr) throw runtime_error("Invalid assignment target");
+		if (var == nullptr) throw ProgError("Invalid assignment target", *cur_tok);
 		const ExprPtr val = logic_or();
 		expr = make_shared<Asgn>(var->get_name(), val);
 	}
@@ -310,8 +318,8 @@ ExprPtr Parser::primary() {
 		return make_shared<Lit>(make_shared<BoolObj>(true));
 
 	if (match({TokType::NUMBER, TokType::STRING})) {
-		const auto prev_tok = prev(cur_tok);
-		return make_shared<Lit>((*prev_tok)->lit_obj);
+		const auto prev_tok = *prev(cur_tok);
+		return make_shared<Lit>(prev_tok->lit_obj);
 	}
 
 	if (match({TokType::IDENTIFIER})) 
@@ -323,7 +331,7 @@ ExprPtr Parser::primary() {
 		return make_shared<Grouping>(expr);
 	}
 
-	throw std::logic_error("No match for token '" + (*cur_tok)->to_str() + "' found in parser");
+  throw ProgError("Invalid syntax for token '" + (*cur_tok)->to_str() + "'", *cur_tok);
 }
 
 bool Parser::match(const initializer_list<TokType> &tok_type_l) {
@@ -335,7 +343,7 @@ bool Parser::match(const initializer_list<TokType> &tok_type_l) {
 // Like match, advances if it's the correct type, otherwise throw an error
 TokPtr Parser::consume(const TokType tok_type, const string &msg) {
 	if (check(tok_type)) return adv();
-	throw runtime_error(msg);
+	throw ProgError(msg, *prev(cur_tok));
 }
 
 TokPtr Parser::adv() {

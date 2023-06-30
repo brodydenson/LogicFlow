@@ -40,19 +40,20 @@ public:
 
 	Tok(const Tok&) = default;
 
-	Tok(tok_t::TokType _type) : type(_type) { } 
+	Tok(tok_t::TokType _type, unsigned _line=0) : type(_type), line(_line) { } 
 
-	Tok(tok_t::TokType _type, double _lit_obj) 
-		: type(_type), lit_obj(std::make_shared<DoubleObj>(_lit_obj)) { } 
-	Tok(tok_t::TokType _type, const std::string &_lit_obj) 
-		: type(_type), lit_obj(std::make_shared<StrObj>(_lit_obj)) { } 
+	Tok(tok_t::TokType _type, double _lit_obj, unsigned _line=0) 
+		: type(_type), lit_obj(std::make_shared<DoubleObj>(_lit_obj)), line(_line) { } 
+	Tok(tok_t::TokType _type, const std::string &_lit_obj, unsigned _line=0) 
+		: type(_type), lit_obj(std::make_shared<StrObj>(_lit_obj)), line(_line) { } 
 	
-	Tok(const std::string &type_str)
-		: type(tok_t::str_to_tok[type_str]) { } 
+	Tok(const std::string &type_str, unsigned _line=0)
+	  : type(tok_t::str_to_tok[type_str]), line(_line) { } 
 
 	std::string to_str() const;
 
 	const tok_t::TokType type;
+  const unsigned line;
 	const std::shared_ptr<PrimObj> lit_obj;
 };
 typedef std::shared_ptr<Tok> TokPtr;

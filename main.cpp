@@ -2,9 +2,10 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "Headers/Lexer.h"
-#include "Headers/Parser.h"
-#include "Headers/Interpreter.h"
+#include <cctype>
+#include "include/Lexer.h"
+#include "include/Parser.h"
+#include "include/Interpreter.h"
 
 using std::cout;
 using std::cin;
@@ -23,10 +24,10 @@ int main() {
   ifstream file("source.txt");
   ostringstream buffer;
   buffer << file.rdbuf();
+  const string s = buffer.str();
+  file.close();
 
-  string s = buffer.str();
-  // IDK how to skip eof char
-  Parser parser(string(s.cbegin(), s.cend()-1));
+  Parser parser(s);
   Interpreter::set_parser(parser);
   Interpreter::interpret();
 

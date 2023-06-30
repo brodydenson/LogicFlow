@@ -1,4 +1,5 @@
-#include "Headers/Expr.h"
+#include "include/Expr.h"
+#include "include/Exception.h"
 
 using std::shared_ptr;
 using std::list;
@@ -9,6 +10,7 @@ using std::runtime_error;
 using tok_t::TokType;
 
 PrimObjPtr BinOp::eval(const EnvPtr env) const {
+  try {
 	switch (op->type) {
 		case TokType::PLUS:
 		return *lhs->eval(env) + *rhs->eval(env);
@@ -31,31 +33,44 @@ PrimObjPtr BinOp::eval(const EnvPtr env) const {
 		case TokType::BANG_EQUAL:
 		return *lhs->eval(env) != *rhs->eval(env);
 		default:
-		throw runtime_error("Invalid binary operator '" + op->to_str() + "'");
+		throw ProgError("Invalid binary operator '" + op->to_str() + "'", op);
 	} // switch op type
+  } catch (runtime_error e) {
+    throw ProgError(e.what(), op);
+  }
 }
 
 PrimObjPtr Unary::eval(const EnvPtr env) const { 
+  try {
 	switch (op->type) {
 		case TokType::BANG:
 		return !*(rhs->eval(env));
 		case TokType::MINUS:
 		return -*(rhs->eval(env));
 		default:
-		throw runtime_error("Invalid unary operator");
+		throw ProgError("Invalid unary operator", op);
 	}
+  } catch (runtime_error e) {
+    throw ProgError(e.what(), op);
+  }
 }
 
 PrimObjPtr Logical::eval(const EnvPtr env) const {
+  try {
 	switch (op->type) {
 		case TokType::AND:
 		return *lhs->eval(env) && *rhs->eval(env);
 		case TokType::OR:
 		return *lhs->eval(env) || *rhs->eval(env);
 		default:
-		throw runtime_error("Invalid logical operator '" + op->to_str() + "'");
+		throw ProgError("Invalid logical operator '" + op->to_str() + "'", op);
 	} // switch op type
+  } catch (runtime_error e) {
+    throw ProgError(e.what(), op);
+  }
 }
+
+
 
 string Call::to_str() const {
   string s = callee->to_str() + '(';
@@ -67,7 +82,7 @@ string Call::to_str() const {
 }
 PrimObjPtr Call::eval(EnvPtr env) const {
 	auto func_obj = dynamic_pointer_cast<FuncObj>(callee->eval(env));
-	if (!func_obj) throw runtime_error("Invalid callable object");
+	if (!func_obj) throw ProgError("Invalid callable object", paren);
 
 	list<PrimObjPtr> args_objs;
   for (auto &arg : args)

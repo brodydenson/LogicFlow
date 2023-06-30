@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
-#include "Headers/Env.h"
+#include "include/Env.h"
+#include "include/Exception.h"
 
 using std::runtime_error;
 using std::dynamic_pointer_cast;
@@ -9,7 +10,7 @@ using tok_t::TokType;
 
 PrimObjPtr Env::define(TokPtr name, PrimObjPtr val) {
 	if (name->type != TokType::IDENTIFIER)
-		throw runtime_error("Token type must be of type identifier");
+		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 	vals[name_str] = val;
 	return val;
@@ -17,13 +18,13 @@ PrimObjPtr Env::define(TokPtr name, PrimObjPtr val) {
 
 PrimObjPtr Env::assign(TokPtr name, PrimObjPtr val) {
 	if (name->type != TokType::IDENTIFIER)
-		throw runtime_error("Token type must be of type identifier");
+		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 
 	auto found = vals.find(name_str);
 	if (found == vals.cend()) {
 		if (enclosing == nullptr)
-			throw runtime_error("Undefined variable " + name_str);
+			throw ProgError("Undefined variable " + name_str, name);
 		return enclosing->assign(name, val);
 	}
 
@@ -33,13 +34,13 @@ PrimObjPtr Env::assign(TokPtr name, PrimObjPtr val) {
 
 PrimObjPtr Env::get(TokPtr name) const {
 	if (name->type != TokType::IDENTIFIER)
-		throw runtime_error("Token type must be of type identifier");
+		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 
 	auto found = vals.find(name_str);
 	if (found == vals.cend()) {
 		if (enclosing == nullptr)
-			throw runtime_error("Undefined variable " + name_str);
+			throw ProgError("Undefined variable " + name_str, name);
 		return enclosing->get(name);
 	}
 
@@ -48,7 +49,7 @@ PrimObjPtr Env::get(TokPtr name) const {
 
 bool Env::contains(TokPtr name) const {
 	if (name->type != TokType::IDENTIFIER)
-		throw runtime_error("Token type must be of type identifier");
+		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
 	return vals.find(name_str) != vals.cend();
 }

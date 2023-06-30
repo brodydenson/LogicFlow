@@ -59,7 +59,7 @@ private:
 
 class Lit : public Expr {
 public:
-	Lit(const PrimObjPtr &_obj) : obj(_obj) { }
+	Lit(const PrimObjPtr &_obj) : obj(_obj) { } // No debug
 
   std::string to_str() const { return obj->to_str(); }
 	PrimObjPtr eval(const EnvPtr env) const { return obj; }
@@ -92,6 +92,7 @@ class Asgn : public Expr {
 public:
 	Asgn(const TokPtr &_name, const ExprPtr &_val)
     : name(_name), val(_val) { }
+
   std::string to_str() const
 		{ return '(' + std::static_pointer_cast<StrObj>(name->lit_obj)->data 
 			+ " = " + val->to_str() + ')'; }
@@ -108,11 +109,12 @@ public:
     : callee(_callee), paren(_paren) { }
 	Call(const ExprPtr &_callee, const TokPtr &_paren, const std::list<ExprPtr> &_args)
     : callee(_callee), paren(_paren), args(_args) { }
+
   std::string to_str() const;
 	PrimObjPtr eval(const EnvPtr) const;
 private:
 	const ExprPtr callee;
-	const TokPtr paren; // TODO: Throw where error occurs
+	const TokPtr paren;
 	const std::list<ExprPtr> args;
 };
 
