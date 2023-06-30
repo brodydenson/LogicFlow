@@ -1,4 +1,6 @@
 .gitignore
 archive/
 build/
+CMakeFiles/
+CMakeLists.txt
 source.txt
