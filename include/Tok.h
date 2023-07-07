@@ -11,20 +11,23 @@ namespace tok_t {
 enum TokType {
 	// Single-character tokens.
 	LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
+  LEFT_BRACKET, RIGHT_BRACKET,
 	COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
+  PIPE,
 
-	// One or two character tokens.
+	// One or multiple character tokens.
 	BANG, BANG_EQUAL,
 	EQUAL, EQUAL_EQUAL,
 	GREATER, GREATER_EQUAL,
 	LESS, LESS_EQUAL,
-
+  COLON_COLON, SEMICOLON_SEMICOLON,
 	// LitTokerals.
 	IDENTIFIER, STRING, NUMBER,
 
 	// Keywords.
 	AND, ELSE, FALSE, FUN, FOR, IF, OR,
 	PRINT, RETURN, TRUE, VAR, WHILE,
+  IN,
 
 	END // EOF
 };

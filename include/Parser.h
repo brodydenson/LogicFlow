@@ -53,6 +53,8 @@ private:
 	ExprPtr term();
 	ExprPtr factor();
 	ExprPtr unary();
+	ExprPtr array();
+	ExprPtr set();
 	ExprPtr call();
 	ExprPtr primary();
 };

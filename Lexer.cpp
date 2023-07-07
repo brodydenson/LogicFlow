@@ -15,6 +15,8 @@ using std::set;
 using std::isalpha;
 using std::isdigit;
 using std::stod;
+using std::cerr;
+using std::endl;
 using std::runtime_error;
 using std::logic_error;
 using std::make_shared;
@@ -84,16 +86,21 @@ TokPtr Lexer::next_tok() {
 	else if (num_lit_end != cur_it) 
 		{ cur_it = num_lit_end; return make_shared<Tok>(TokType::NUMBER, 
 								 stod(string(beg, num_lit_end)), cur_line); }
-  // cout << '\n' << toascii(*cur_it) << std::endl;
-	throw logic_error("No matching case for current character"); 
-	
+
+  throw ProgError("Token unrecognizable", make_shared<Tok>(TokType::END, cur_line));
+	// throw logic_error("No matching case for current character"); 
 }
 
 void Lexer::tokenize() {
 	toks.clear();
   TokPtr tok;
-	while ((tok = next_tok())) 
-		toks.push_back(tok);
+  try {
+    while ((tok = next_tok())) 
+      toks.push_back(tok);
+  } catch (ProgError e) {
+    cerr << "Syntax Error: " << e.err_msg() << endl;
+    exit(0);
+  }
 	toks.push_back(make_shared<Tok>(TokType::END));
 }
 
@@ -152,7 +159,8 @@ Lexer::sci Lexer::check_num_lit() const {
 		&& (isdigit(*tmp_it) || *tmp_it == '.')) {
 
 		if (*tmp_it == '.' && !allow_dec)
-      throw ProgError("Too many decimals", make_shared<Tok>(TokType::END, cur_line));
+      return cur_it;
+      // throw ProgError("Too many decimals", make_shared<Tok>(TokType::END, cur_line));
 		else if (*tmp_it == '.')
 			allow_dec = false;
 		tmp_it++;

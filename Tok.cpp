@@ -33,6 +33,8 @@ map<string, TokType> str_to_tok = {
 	{")", RIGHT_PAREN},
 	{"{", LEFT_BRACE},
 	{"}", RIGHT_BRACE},
+	{"[", LEFT_BRACKET},
+	{"]", RIGHT_BRACKET},
 	{",", COMMA},
 	{".", DOT},
 	{"-", MINUS},
@@ -40,8 +42,9 @@ map<string, TokType> str_to_tok = {
 	{";", SEMICOLON},
 	{"/", SLASH},
 	{"*", STAR},
+	{"|", PIPE},
 
-	// One or two character tokens.
+	// One or multiple character tokens.
 	{"!", BANG},
 	{"!=", BANG_EQUAL},
 	{"=", EQUAL},
@@ -50,6 +53,8 @@ map<string, TokType> str_to_tok = {
 	{">=", GREATER_EQUAL},
 	{"<", LESS},
 	{"<=", LESS_EQUAL},
+  {"::", COLON_COLON},
+  {";;", SEMICOLON_SEMICOLON},
 
 	// Keywords.
 	{"and", AND},
@@ -63,7 +68,8 @@ map<string, TokType> str_to_tok = {
 	{"return", RETURN},
 	{"true", TRUE},
 	{"var", VAR},
-	{"while", WHILE}
+	{"while", WHILE},
+	{"in", IN},
 };
 
 map<TokType, string> tok_to_str = {
@@ -72,6 +78,8 @@ map<TokType, string> tok_to_str = {
 	{RIGHT_PAREN, ")"},
 	{LEFT_BRACE, "{"},
 	{RIGHT_BRACE, "}"},
+	{LEFT_BRACKET, "["},
+	{RIGHT_BRACKET, "]"},
  	{COMMA, ","},
 	{DOT, "."},
 	{MINUS, "-"},
@@ -79,8 +87,9 @@ map<TokType, string> tok_to_str = {
 	{SEMICOLON, ";"},
 	{SLASH, "/"},
 	{STAR, "*"},
+	{PIPE, "|"},
 
-	// One or two character tokens.
+	// One or multiple character tokens.
 	{BANG, "!"},
 	{BANG_EQUAL, "!="},
 	{EQUAL, "="},
@@ -89,6 +98,8 @@ map<TokType, string> tok_to_str = {
 	{GREATER_EQUAL, ">="},
 	{LESS, "<"},
 	{LESS_EQUAL, "<="},
+  {COLON_COLON, "::"},
+  {SEMICOLON_SEMICOLON, ";;"},
 
 	// Keywords.
 	{AND, "and"},
@@ -102,6 +113,7 @@ map<TokType, string> tok_to_str = {
 	{RETURN, "return"},
 	{TRUE, "true"},
 	{VAR, "var"},
-	{WHILE, "while"}
+	{WHILE, "while"},
+	{IN, "in"},
 };
 } // namespace tok_t

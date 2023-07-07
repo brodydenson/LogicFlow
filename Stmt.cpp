@@ -17,10 +17,10 @@ void IfStmt::exec(const EnvPtr &env) {
 }
 
 string BlockStmt::to_str() const {
-  string s;
+  string s = "{";
   for (auto it = stmts.cbegin(); it != stmts.cend(); ++it) 
     s += (*it)->to_str() + '\n';
-  return s;
+  return s + "}";
 }
 
 void BlockStmt::exec(const EnvPtr &enclosing_env) {
@@ -30,7 +30,7 @@ void BlockStmt::exec(const EnvPtr &enclosing_env) {
 }
 
 string FuncStmt::to_str() const {
-  return name->to_str() + '(' + to_string(params.size()) + ')' + body->to_str();
+  return name->to_str() + '(' + to_string(params.size()) + ") " + body->to_str();
 }
 void FuncStmt::exec(const EnvPtr &env) {
   const auto func = std::make_shared<FuncObj>(std::make_shared<FuncStmt>(*this)); 

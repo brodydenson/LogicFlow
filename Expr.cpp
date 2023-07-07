@@ -1,15 +1,18 @@
 #include "include/Expr.h"
 #include "include/Exception.h"
+#include "include/MySet.h"
+#include "include/Stmt.h"
 
 using std::shared_ptr;
 using std::list;
+using std::vector;
 using std::string;
 using std::make_shared;
 using std::dynamic_pointer_cast;
 using std::runtime_error;
 using tok_t::TokType;
 
-PrimObjPtr BinOp::eval(const EnvPtr env) const {
+PrimObjPtr BinOp::eval(const EnvPtr &env) const {
   try {
 	switch (op->type) {
 		case TokType::PLUS:
@@ -40,7 +43,7 @@ PrimObjPtr BinOp::eval(const EnvPtr env) const {
   }
 }
 
-PrimObjPtr Unary::eval(const EnvPtr env) const { 
+PrimObjPtr Unary::eval(const EnvPtr &env) const { 
   try {
 	switch (op->type) {
 		case TokType::BANG:
@@ -55,7 +58,7 @@ PrimObjPtr Unary::eval(const EnvPtr env) const {
   }
 }
 
-PrimObjPtr Logical::eval(const EnvPtr env) const {
+PrimObjPtr Logical::eval(const EnvPtr &env) const {
   try {
 	switch (op->type) {
 		case TokType::AND:
@@ -80,7 +83,7 @@ string Call::to_str() const {
 	s += ')';
   return s;
 }
-PrimObjPtr Call::eval(EnvPtr env) const {
+PrimObjPtr Call::eval(const EnvPtr &env) const {
 	auto func_obj = dynamic_pointer_cast<FuncObj>(callee->eval(env));
 	if (!func_obj) throw ProgError("Invalid callable object", paren);
 
@@ -91,4 +94,31 @@ PrimObjPtr Call::eval(EnvPtr env) const {
 	return func_obj->call(args_objs);
 }
 
+string Arr::to_str() const {
+  // Copy of ArrObj to_str method
+  string s = "[";
+  for (auto it = data.cbegin(); it != data.cend(); ++it)
+    s += it + 1 != data.cend() ? ((*it)->to_str() + ", ") : ((*it)->to_str() + "]");
+  return s;
+}
+PrimObjPtr Arr::eval(const EnvPtr &env) const {
+  vector<PrimObjPtr> prim_obj_arr;
+  for (const auto &i : data)
+    prim_obj_arr.push_back(i->eval(env));
+  return make_shared<ArrObj>(prim_obj_arr);
+}
 
+
+string Set::to_str() const {
+  return "{ " + ret->to_str() + " | " + var_name->to_str() + " in " + domain->to_str() + " }";
+}
+PrimObjPtr Set::eval(const EnvPtr &env) const {
+  const auto ret_stmt = make_shared<ReturnStmt>(ret);
+  const auto func_stmt = make_shared<FuncStmt>(nullptr, list<TokPtr>({ var_name }), ret_stmt);
+  const auto func = make_shared<FuncObj>(func_stmt);
+
+  const DomainPtr my_domain = domain->eval(env)->to_set();
+  const auto my_set = make_shared<MySet>(my_domain, func);
+
+  return make_shared<SetObj>(my_set);
+}

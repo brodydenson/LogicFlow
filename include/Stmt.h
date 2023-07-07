@@ -58,8 +58,8 @@ public:
 
   std::string to_str() const { return val->to_str(); }
 
-	// TODO: Use the current ostream
-	void exec(const EnvPtr &env) { std::cout << *val->eval(env) << std::endl; }
+	void exec(const EnvPtr &env) 
+    { std::cout << *val->eval(env) << std::endl; }
 private:
 	const ExprPtr val;
 };
@@ -127,17 +127,14 @@ private:
 
 class ReturnStmt : public Stmt {
 public:
-	ReturnStmt(const TokPtr &_keyword, const ExprPtr &_val)
-    : keyword(_keyword), val(_val) { }
-	ReturnStmt(const TokPtr &_keyword)
-    : keyword(_keyword) { }
+	ReturnStmt(const ExprPtr &_val) : val(_val) { }
+	ReturnStmt() { }
   ReturnStmt(const ReturnStmt&) = default;
 
   std::string to_str() const { return "return " + val->to_str(); }
 
 	void exec(const EnvPtr&);
 private:
-	const TokPtr keyword;
 	const ExprPtr val;
 };
 

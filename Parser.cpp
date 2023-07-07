@@ -1,6 +1,7 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 #include "include/Exception.h"
 #include "include/Expr.h"
 #include "include/Env.h"
@@ -16,6 +17,7 @@ using std::dynamic_pointer_cast;
 using std::cout;
 using std::runtime_error;
 using std::list;
+using std::vector;
 using std::cerr;
 using std::endl;
 using tok_t::TokType;
@@ -66,7 +68,7 @@ StmtPtr Parser::func_declaration() {
 		} while (match({TokType::COMMA}));
 	consume(TokType::RIGHT_PAREN, "Expect ')' after parameters");
 
-	consume(TokType::LEFT_BRACE, "Expect '{' before function body");
+	consume(TokType::COLON_COLON, "Expect '::' before function body");
 	const StmtPtr body = block();
 	return make_shared<FuncStmt>(name, params, body);
 }
@@ -87,7 +89,7 @@ StmtPtr Parser::statement() {
 	if (match({TokType::PRINT})) return print_statement();
 	if (match({TokType::RETURN})) return return_statement();
 	if (match({TokType::WHILE})) return while_statement();
-	if (match({TokType::LEFT_BRACE})) return block();
+	if (match({TokType::COLON_COLON})) return block();
 	return expression_statement();
 }
 
@@ -102,23 +104,20 @@ StmtPtr Parser::for_statement() {
 
 	// Initializer (1)
 	StmtPtr initializer;
-	if (!match({TokType::SEMICOLON})) {
+	if (!match({TokType::SEMICOLON}))
 		initializer = match({TokType::VAR}) 
 			? var_declaration() : expression_statement();
-	}
 
 	// Condition (2)
 	ExprPtr condition;
-	if (!check(TokType::SEMICOLON)) {
+	if (!check(TokType::SEMICOLON))
 		condition = expression();
-	}
 	consume(TokType::SEMICOLON, "Expect ';' after loop condition");
 
 	// Increment (3)
 	ExprPtr increment;
-	if (!check(TokType::RIGHT_PAREN)) {
+	if (!check(TokType::RIGHT_PAREN))
 		increment = expression();
-	}
 	consume(TokType::RIGHT_PAREN, "Expect ')' after for clauses");
 	
 	// Body
@@ -163,11 +162,11 @@ StmtPtr Parser::print_statement() {
 StmtPtr Parser::return_statement() {
   const TokPtr keyword = *prev(cur_tok);
   if (match({TokType::SEMICOLON}))
-    return make_shared<ReturnStmt>(keyword);
+    return make_shared<ReturnStmt>();
 
 	const ExprPtr val = expression();
 	consume(TokType::SEMICOLON, "Expect ';' after value");
-	return make_shared<ReturnStmt>(keyword, val);
+	return make_shared<ReturnStmt>(val);
 }
 
 StmtPtr Parser::while_statement() {
@@ -180,10 +179,10 @@ StmtPtr Parser::while_statement() {
 
 StmtPtr Parser::block() {
 	list<StmtPtr> stmts;
-	while (!check(TokType::RIGHT_BRACE) && !is_at_end())
+	while (!check(TokType::SEMICOLON_SEMICOLON) && !is_at_end())
 		stmts.push_back(declaration());
 
-	consume(TokType::RIGHT_BRACE, "Expected '}' after block");
+	consume(TokType::SEMICOLON_SEMICOLON, "Expected ';;' after block");
 	return make_shared<BlockStmt>(stmts);
 }
 
@@ -285,15 +284,40 @@ ExprPtr Parser::unary() {
 		return make_shared<Unary>(rhs, op);
 	}
 
-	return call();
+	return array();
+}
+
+ExprPtr Parser::array() {
+	if (match({TokType::LEFT_BRACKET})) {
+    vector<ExprPtr> expr_arr;
+    do { expr_arr.push_back(expression()); } while (match({TokType::COMMA}));
+    consume(TokType::RIGHT_BRACKET, "Expect ']' after array");
+    return make_shared<Arr>(expr_arr);
+	}
+
+	return set();
+}
+
+ExprPtr Parser::set() {
+  if (match({TokType::LEFT_BRACE})) {
+    const ExprPtr ret = expression();
+    consume(TokType::PIPE, "Expect '|' before variable declaration");
+    const TokPtr var_name = consume(TokType::IDENTIFIER, 
+                                    "Expect identifier before domain");
+    consume(TokType::IN, "Expect 'in' before domain");
+    const ExprPtr domain = array();
+    consume(TokType::RIGHT_BRACE, "Expect '}' after domain");
+    return make_shared<Set>(ret, var_name, domain);
+  }
+
+  return call();
 }
 
 ExprPtr Parser::call() {
 	ExprPtr expr = primary();
 
-	while (match({TokType::LEFT_PAREN})) {
+	while (match({TokType::LEFT_PAREN}))
 		expr = finish_call(expr);
-	}
 
 	return expr;
 }
@@ -302,7 +326,7 @@ ExprPtr Parser::finish_call(const ExprPtr &callee) {
 	list<ExprPtr> args;
 
 	if (match({TokType::RIGHT_PAREN})) 
-		{ return make_shared<Call>(callee, *prev(cur_tok)); }
+	  return make_shared<Call>(callee, *prev(cur_tok));
 
 	do { args.push_back(expression()); } while (match({TokType::COMMA}));
 
