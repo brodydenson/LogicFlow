@@ -33,7 +33,7 @@ string FuncStmt::to_str() const {
   return name->to_str() + '(' + to_string(params.size()) + ") " + body->to_str();
 }
 void FuncStmt::exec(const EnvPtr &env) {
-  const auto func = std::make_shared<FuncObj>(std::make_shared<FuncStmt>(*this)); 
+  const auto func = std::make_shared<FuncObj>(std::make_shared<FuncStmt>(*this), env); 
   env->define(name, func);
 }
 

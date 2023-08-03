@@ -75,7 +75,7 @@ public:
 
 	void exec(const EnvPtr &env) 
 		{ env->define(name, initializer != nullptr 
-				   ? initializer->eval(env) : std::make_shared<DoubleObj>(0)); }
+				   ? initializer->eval(env) : std::make_shared<IntObj>(0)); }
 private:
 	const TokPtr name;
 	const ExprPtr initializer;

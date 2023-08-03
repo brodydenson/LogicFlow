@@ -43,6 +43,7 @@ map<string, TokType> str_to_tok = {
 	{"/", SLASH},
 	{"*", STAR},
 	{"|", PIPE},
+	{"_", UNDERSCORE},
 
 	// One or multiple character tokens.
 	{"!", BANG},
@@ -55,6 +56,8 @@ map<string, TokType> str_to_tok = {
 	{"<=", LESS_EQUAL},
   {"::", COLON_COLON},
   {";;", SEMICOLON_SEMICOLON},
+  {"++", PLUS_PLUS},
+  {"--", MINUS_MINUS},
 
 	// Keywords.
 	{"and", AND},
@@ -88,6 +91,7 @@ map<TokType, string> tok_to_str = {
 	{SLASH, "/"},
 	{STAR, "*"},
 	{PIPE, "|"},
+	{UNDERSCORE, "_"},
 
 	// One or multiple character tokens.
 	{BANG, "!"},
@@ -100,6 +104,8 @@ map<TokType, string> tok_to_str = {
 	{LESS_EQUAL, "<="},
   {COLON_COLON, "::"},
   {SEMICOLON_SEMICOLON, ";;"},
+  {PLUS_PLUS, "++"},
+  {MINUS_MINUS, "--"},
 
 	// Keywords.
 	{AND, "and"},

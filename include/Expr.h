@@ -132,6 +132,9 @@ class Set : public Expr {
 public:
   Set(const ExprPtr &_ret, const TokPtr &_var_name, const ExprPtr &_domain)
     : ret(_ret), var_name(_var_name), domain(_domain) { }
+  Set(const ExprPtr &_ret, const TokPtr &_var_name, 
+      const ExprPtr &_domain, const ExprPtr &_conditions)
+    : ret(_ret), var_name(_var_name), domain(_domain), conditions(_conditions) { }
 
   std::string to_str() const;
   PrimObjPtr eval(const EnvPtr&) const;
@@ -139,6 +142,7 @@ private:
   const ExprPtr ret;
   const TokPtr var_name;
   const ExprPtr domain;
+  const ExprPtr conditions;
 };
 
 #endif

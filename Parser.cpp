@@ -7,6 +7,7 @@
 #include "include/Env.h"
 #include "include/Parser.h"
 #include "include/PrimObj.h"
+#include "include/Interpreter.h"
 
 using std::string;
 using std::initializer_list;
@@ -100,51 +101,60 @@ StmtPtr Parser::expression_statement() {
 }
 
 StmtPtr Parser::for_statement() {
-	consume(TokType::LEFT_PAREN, "Expect '(' after for");
+  // Somehow this ran first try with 0 mistakes...
+  // That's a first
+  
+  // Collecting inputs
+	// consume(TokType::LEFT_PAREN, "Expect '(' after for");
+  const TokPtr var = consume(TokType::IDENTIFIER, "Expect identifier to declare");
+  const TokPtr in = consume(TokType::IN, "Expect 'in' before domain");
+  ExprPtr container = expression();
+  // Conversion error without cap (causes seg fault)
+  container = make_shared<Call>(
+    make_shared<Var>(Interpreter::to_arr_tok), in, list<ExprPtr>{container});
+	// consume(TokType::RIGHT_PAREN, "Expect ')' after domain");
 
 	// Initializer (1)
-	StmtPtr initializer;
-	if (!match({TokType::SEMICOLON}))
-		initializer = match({TokType::VAR}) 
-			? var_declaration() : expression_statement();
+  const TokPtr index = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("IDX"));
+  const TokPtr arr = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("ARR"));
+  const StmtPtr index_init = make_shared<VarDeclStmt>(index, make_shared<Lit>(make_shared<IntObj>(1)));
+  const StmtPtr arr_init = make_shared<VarDeclStmt>(arr, container);
+  const ExprPtr index_var = make_shared<Var>(index);
+  const ExprPtr arr_var = make_shared<Var>(arr);
 
 	// Condition (2)
-	ExprPtr condition;
-	if (!check(TokType::SEMICOLON))
-		condition = expression();
-	consume(TokType::SEMICOLON, "Expect ';' after loop condition");
+  const ExprPtr len = make_shared<Unary>(arr_var, make_shared<Tok>(TokType::PIPE));
+  const ExprPtr condition = make_shared<BinOp>(index_var, len, 
+                                               make_shared<Tok>(TokType::LESS_EQUAL));
 
 	// Increment (3)
-	ExprPtr increment;
-	if (!check(TokType::RIGHT_PAREN))
-		increment = expression();
-	consume(TokType::RIGHT_PAREN, "Expect ')' after for clauses");
+  const ExprPtr inc_res = make_shared<BinOp>(index_var, make_shared<Lit>(make_shared<IntObj>(1)),
+                                             make_shared<Tok>(TokType::PLUS));
+  const ExprPtr inc_asgn = make_shared<Asgn>(index, inc_res);
 	
 	// Body
 	StmtPtr body = statement();
 
-	if (increment) {
-		body = make_shared<BlockStmt>(
-			list<StmtPtr>({body, make_shared<ExprStmt>(increment)})
-		);
-	}
-
-	if (!condition) condition = make_shared<Lit>(make_shared<BoolObj>(true));
+  body = make_shared<BlockStmt>(
+    list<StmtPtr>({
+      make_shared<VarDeclStmt>(var, make_shared<BinOp>(arr_var, index_var, 
+                                                       make_shared<Tok>(TokType::UNDERSCORE))),
+      body, 
+      make_shared<ExprStmt>(inc_asgn)
+    })
+  );
 	body = make_shared<WhileStmt>(condition, body);
-
-	if (initializer) {
-		body = make_shared<BlockStmt>(
-			list<StmtPtr>({initializer, body})
-		);
-	}
+  body = make_shared<BlockStmt>(
+    list<StmtPtr>({arr_init, index_init, body})
+  );
 
 	return body;
 }
 
 StmtPtr Parser::if_statement() {
-	consume(TokType::LEFT_PAREN, "Expect '(' before if condition");
+	// consume(TokType::LEFT_PAREN, "Expect '(' before if condition");
 	const ExprPtr condition = expression();
-	consume(TokType::RIGHT_PAREN, "Expect ')' after if condition");
+	// consume(TokType::RIGHT_PAREN, "Expect ')' after if condition");
 	const StmtPtr then_branch = statement();
 	if (match({TokType::ELSE})) {
 		const StmtPtr else_branch = statement();
@@ -170,9 +180,9 @@ StmtPtr Parser::return_statement() {
 }
 
 StmtPtr Parser::while_statement() {
-	consume(TokType::LEFT_PAREN, "Expect '(' before while condition");
+	// consume(TokType::LEFT_PAREN, "Expect '(' before while condition");
 	const ExprPtr condition = expression();
-	consume(TokType::RIGHT_PAREN, "Expect ')' after while condition");
+	// consume(TokType::RIGHT_PAREN, "Expect ')' after while condition");
 	const StmtPtr body = statement();
 	return make_shared<WhileStmt>(condition, body);
 }
@@ -240,12 +250,24 @@ ExprPtr Parser::equality() {
 }
 
 ExprPtr Parser::comparison() {
-	ExprPtr expr = term();
+	ExprPtr expr = array_op();
 
 	while (match({TokType::GREATER, TokType::GREATER_EQUAL,
 				  TokType::LESS, TokType::LESS_EQUAL})) {
 		const TokPtr op = *prev(cur_tok);
 		const ExprPtr rhs = term();
+		expr = make_shared<BinOp>(expr, rhs, op);
+	}
+
+	return expr;
+}
+
+ExprPtr Parser::array_op() {
+	ExprPtr expr = term();
+
+	while (match({TokType::MINUS_MINUS, TokType::PLUS_PLUS})) {
+		const TokPtr op = *prev(cur_tok);
+		const ExprPtr rhs = factor();
 		expr = make_shared<BinOp>(expr, rhs, op);
 	}
 
@@ -290,6 +312,7 @@ ExprPtr Parser::unary() {
 ExprPtr Parser::array() {
 	if (match({TokType::LEFT_BRACKET})) {
     vector<ExprPtr> expr_arr;
+    if (match({TokType::RIGHT_BRACKET})) return make_shared<Arr>(expr_arr);
     do { expr_arr.push_back(expression()); } while (match({TokType::COMMA}));
     consume(TokType::RIGHT_BRACKET, "Expect ']' after array");
     return make_shared<Arr>(expr_arr);
@@ -302,19 +325,25 @@ ExprPtr Parser::set() {
   if (match({TokType::LEFT_BRACE})) {
     const ExprPtr ret = expression();
     consume(TokType::PIPE, "Expect '|' before variable declaration");
+    // For ranges and non ranges
     const TokPtr var_name = consume(TokType::IDENTIFIER, 
                                     "Expect identifier before domain");
     consume(TokType::IN, "Expect 'in' before domain");
-    const ExprPtr domain = array();
+    const ExprPtr domain = expression();
+    if (match({TokType::RIGHT_BRACE}))
+      return make_shared<Set>(ret, var_name, domain);
+    consume(TokType::COMMA, "Expect ',' or '}' after domain");
+
+    const ExprPtr conditions = logic_or();
     consume(TokType::RIGHT_BRACE, "Expect '}' after domain");
-    return make_shared<Set>(ret, var_name, domain);
+    return make_shared<Set>(ret, var_name, domain, conditions);
   }
 
   return call();
 }
 
 ExprPtr Parser::call() {
-	ExprPtr expr = primary();
+	ExprPtr expr = index();
 
 	while (match({TokType::LEFT_PAREN}))
 		expr = finish_call(expr);
@@ -335,6 +364,18 @@ ExprPtr Parser::finish_call(const ExprPtr &callee) {
 	return make_shared<Call>(callee, paren, args);
 }
 
+ExprPtr Parser::index() {
+  const ExprPtr expr = primary();
+
+  if (match({TokType::UNDERSCORE})) {
+    const TokPtr op = *prev(cur_tok);
+    const ExprPtr index = primary();
+    return make_shared<BinOp>(expr, index, op);
+  }
+
+  return expr;
+}
+
 ExprPtr Parser::primary() {
 	if (match({TokType::FALSE})) 
 		return make_shared<Lit>(make_shared<BoolObj>(false));
@@ -353,6 +394,12 @@ ExprPtr Parser::primary() {
 		const ExprPtr expr = expression();
 		consume(TokType::RIGHT_PAREN, "Missing ')'");
 		return make_shared<Grouping>(expr);
+	}
+
+	if (match({TokType::PIPE})) {
+		const ExprPtr expr = expression();
+		consume(TokType::PIPE, "Missing ending '|'");
+		return make_shared<Unary>(expr, make_shared<Tok>(TokType::PIPE));
 	}
 
   throw ProgError("Invalid syntax for token '" + (*cur_tok)->to_str() + "'", *cur_tok);

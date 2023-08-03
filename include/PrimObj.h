@@ -20,50 +20,73 @@ struct PrimObj {
 	friend std::ostream &operator<<(std::ostream &os, const PrimObj &obj) 
 		{ os << obj.to_str(); return os; }
 	virtual ~PrimObj() = default;
-	virtual std::string to_str() const = 0;
-  virtual double to_double() const = 0;
-	virtual bool to_bool() const = 0;
-  virtual std::vector<PrimObjPtr> to_arr() const = 0;
-  virtual DomainPtr to_set() const = 0;
-	virtual PrimObjPtr operator-() const;
-	virtual PrimObjPtr operator!() const;
-	virtual PrimObjPtr operator+(const PrimObj&) const;
-	virtual PrimObjPtr operator-(const PrimObj&) const;
-	virtual PrimObjPtr operator*(const PrimObj&) const;
-	virtual PrimObjPtr operator/(const PrimObj&) const;
-	virtual PrimObjPtr operator>(const PrimObj&) const;
-	virtual PrimObjPtr operator>=(const PrimObj&) const;
-	virtual PrimObjPtr operator<(const PrimObj&) const;
-	virtual PrimObjPtr operator<=(const PrimObj&) const;
-	virtual PrimObjPtr operator==(const PrimObj&) const;
-	virtual PrimObjPtr operator!=(const PrimObj&) const;
-	virtual PrimObjPtr operator&&(const PrimObj&) const;
-	virtual PrimObjPtr operator||(const PrimObj&) const;
+	virtual std::string to_str() const;
+  virtual int to_int() const;
+  virtual double to_double() const;
+	virtual bool to_bool() const;
+  virtual std::vector<PrimObjPtr> to_arr(const size_t max_size=0) const;
+  virtual DomainPtr to_set() const;
+
+  virtual PrimObjPtr len() const;
+	virtual PrimObjPtr negative() const;
+	virtual PrimObjPtr negate() const;
+  virtual PrimObjPtr push(const PrimObjPtr&) const;
+  virtual PrimObjPtr pop(const PrimObjPtr&) const;
+	virtual PrimObjPtr add(const PrimObjPtr&) const;
+	virtual PrimObjPtr sub(const PrimObjPtr&) const;
+	virtual PrimObjPtr mul(const PrimObjPtr&) const;
+	virtual PrimObjPtr div(const PrimObjPtr&) const;
+	virtual PrimObjPtr gt(const PrimObjPtr&) const;
+	virtual PrimObjPtr gte(const PrimObjPtr&) const;
+	virtual PrimObjPtr lt(const PrimObjPtr&) const;
+	virtual PrimObjPtr lte(const PrimObjPtr&) const;
+	virtual PrimObjPtr eq(const PrimObjPtr&) const;
+	virtual PrimObjPtr neq(const PrimObjPtr&) const;
+	virtual PrimObjPtr conj(const PrimObjPtr&) const;
+	virtual PrimObjPtr disj(const PrimObjPtr&) const;
+	virtual PrimObjPtr at(const PrimObjPtr&) const;
+};
+
+struct IntObj : public PrimObj {
+	IntObj(int _data) : data(_data) { } // nonexplicit
+	std::string to_str() const { return std::to_string(data); }
+  int to_int() const { return data; }
+  double to_double() const { return data; }
+	bool to_bool() const { return data != 0; }
+
+	PrimObjPtr negative() const;
+	PrimObjPtr add(const PrimObjPtr&) const;
+	PrimObjPtr sub(const PrimObjPtr&) const;
+	PrimObjPtr mul(const PrimObjPtr&) const;
+	PrimObjPtr div(const PrimObjPtr&) const;
+	PrimObjPtr gt(const PrimObjPtr&) const;
+	PrimObjPtr gte(const PrimObjPtr&) const;
+	PrimObjPtr lt(const PrimObjPtr&) const;
+	PrimObjPtr lte(const PrimObjPtr&) const;
+	PrimObjPtr eq(const PrimObjPtr&) const;
+	PrimObjPtr neq(const PrimObjPtr&) const;
+
+	const int data;
 };
 
 struct DoubleObj : public PrimObj {
 	DoubleObj(double _data) : data(_data) { } // nonexplicit
 	std::string to_str() const { return std::to_string(data); }
+  int to_int() const { return data; }
   double to_double() const { return data; }
 	bool to_bool() const { return data != 0; }
-  std::vector<PrimObjPtr> to_arr() const
-    { throw std::runtime_error("No type conversion from double to array"); }
-  DomainPtr to_set() const
-    { throw std::runtime_error("No type conversion from double to set"); }
-	PrimObjPtr operator-() const;
-	PrimObjPtr operator!() const;
-	PrimObjPtr operator+(const PrimObj&) const;
-	PrimObjPtr operator-(const PrimObj&) const;
-	PrimObjPtr operator*(const PrimObj&) const;
-	PrimObjPtr operator/(const PrimObj&) const;
-	PrimObjPtr operator>(const PrimObj&) const;
-	PrimObjPtr operator>=(const PrimObj&) const;
-	PrimObjPtr operator<(const PrimObj&) const;
-	PrimObjPtr operator<=(const PrimObj&) const;
-	PrimObjPtr operator==(const PrimObj&) const;
-	PrimObjPtr operator!=(const PrimObj&) const;
-	PrimObjPtr operator&&(const PrimObj&) const;
-	PrimObjPtr operator||(const PrimObj&) const;
+
+	PrimObjPtr negative() const;
+	PrimObjPtr add(const PrimObjPtr&) const;
+	PrimObjPtr sub(const PrimObjPtr&) const;
+	PrimObjPtr mul(const PrimObjPtr&) const;
+	PrimObjPtr div(const PrimObjPtr&) const;
+	PrimObjPtr gt(const PrimObjPtr&) const;
+	PrimObjPtr gte(const PrimObjPtr&) const;
+	PrimObjPtr lt(const PrimObjPtr&) const;
+	PrimObjPtr lte(const PrimObjPtr&) const;
+	PrimObjPtr eq(const PrimObjPtr&) const;
+	PrimObjPtr neq(const PrimObjPtr&) const;
 
 	const double data;
 };
@@ -71,22 +94,15 @@ struct DoubleObj : public PrimObj {
 struct StrObj : public PrimObj {
 	StrObj(const std::string &_data) : data(_data) { } // nonexplicit
 	std::string to_str() const { return data; }
-  double to_double() const
-    { throw std::runtime_error("No type conversion from string to double"); }
 	bool to_bool() const { return data.length() != 0; }
-  std::vector<PrimObjPtr> to_arr() const
-    { throw std::runtime_error("No type conversion from string to array"); }
-  DomainPtr to_set() const
-    { throw std::runtime_error("No type conversion from string to set"); }
-	PrimObjPtr operator+(const PrimObj&) const;
-	PrimObjPtr operator>(const PrimObj&) const;
-	PrimObjPtr operator>=(const PrimObj&) const;
-	PrimObjPtr operator<(const PrimObj&) const;
-	PrimObjPtr operator<=(const PrimObj&) const;
-	PrimObjPtr operator==(const PrimObj&) const;
-	PrimObjPtr operator!=(const PrimObj&) const;
-	PrimObjPtr operator&&(const PrimObj&) const;
-	PrimObjPtr operator||(const PrimObj&) const;
+
+	PrimObjPtr add(const PrimObjPtr&) const;
+	PrimObjPtr gt(const PrimObjPtr&) const;
+	PrimObjPtr gte(const PrimObjPtr&) const;
+	PrimObjPtr lt(const PrimObjPtr&) const;
+	PrimObjPtr lte(const PrimObjPtr&) const;
+	PrimObjPtr eq(const PrimObjPtr&) const;
+	PrimObjPtr neq(const PrimObjPtr&) const;
 
 	const std::string data;
 };
@@ -94,24 +110,17 @@ struct StrObj : public PrimObj {
 struct BoolObj : public PrimObj {
 	BoolObj(bool _data) : data(_data) { } // nonexplicit
 	std::string to_str() const { return data ? "true" : "false"; }
-  double to_double() const
-    { throw std::runtime_error("No type conversion from bool to double"); }
 	bool to_bool() const { return data; }
-  std::vector<PrimObjPtr> to_arr() const
-    { throw std::runtime_error("No type conversion from bool to array"); }
-  DomainPtr to_set() const
-    { throw std::runtime_error("No type conversion from bool to set"); }
-	PrimObjPtr operator!() const;
-	PrimObjPtr operator+(const PrimObj&) const;
-	PrimObjPtr operator*(const PrimObj&) const;
-	PrimObjPtr operator>(const PrimObj&) const;
-	PrimObjPtr operator>=(const PrimObj&) const;
-	PrimObjPtr operator<(const PrimObj&) const;
-	PrimObjPtr operator<=(const PrimObj&) const;
-	PrimObjPtr operator==(const PrimObj&) const;
-	PrimObjPtr operator!=(const PrimObj&) const;
-	PrimObjPtr operator&&(const PrimObj&) const;
-	PrimObjPtr operator||(const PrimObj&) const;
+
+	PrimObjPtr negate() const;
+	PrimObjPtr add(const PrimObjPtr&) const;
+	PrimObjPtr mul(const PrimObjPtr&) const;
+	PrimObjPtr gt(const PrimObjPtr&) const;
+	PrimObjPtr gte(const PrimObjPtr&) const;
+	PrimObjPtr lt(const PrimObjPtr&) const;
+	PrimObjPtr lte(const PrimObjPtr&) const;
+	PrimObjPtr eq(const PrimObjPtr&) const;
+	PrimObjPtr neq(const PrimObjPtr&) const;
 
 	const bool data;
 };
@@ -119,25 +128,26 @@ struct BoolObj : public PrimObj {
 struct ArrObj : public PrimObj {
 	ArrObj(const std::vector<PrimObjPtr> &_data) : data(_data) { } // nonexplicit
 	std::string to_str() const;
-  double to_double() const
-    { throw std::runtime_error("No type conversion from array to double"); }
 	bool to_bool() const { return data.size() > 0; }
-  std::vector<PrimObjPtr> to_arr() const { return data; }
+  std::vector<PrimObjPtr> to_arr(const size_t) const { return data; }
   DomainPtr to_set() const;
-	PrimObjPtr operator-() const;
-	PrimObjPtr operator!() const;
-	PrimObjPtr operator+(const PrimObj&) const;
-	PrimObjPtr operator-(const PrimObj&) const;
-	PrimObjPtr operator*(const PrimObj&) const;
-	PrimObjPtr operator/(const PrimObj&) const;
-	PrimObjPtr operator>(const PrimObj&) const;
-	PrimObjPtr operator>=(const PrimObj&) const;
-	PrimObjPtr operator<(const PrimObj&) const;
-	PrimObjPtr operator<=(const PrimObj&) const;
-	PrimObjPtr operator==(const PrimObj&) const;
-	PrimObjPtr operator!=(const PrimObj&) const;
-	PrimObjPtr operator&&(const PrimObj&) const;
-	PrimObjPtr operator||(const PrimObj&) const;
+
+  PrimObjPtr len() const;
+	PrimObjPtr negative() const;
+	PrimObjPtr negate() const;
+  PrimObjPtr push(const PrimObjPtr&) const;
+  PrimObjPtr pop(const PrimObjPtr&) const;
+	PrimObjPtr add(const PrimObjPtr&) const;
+	PrimObjPtr sub(const PrimObjPtr&) const;
+	PrimObjPtr mul(const PrimObjPtr&) const;
+	PrimObjPtr div(const PrimObjPtr&) const;
+	PrimObjPtr gt(const PrimObjPtr&) const;
+	PrimObjPtr gte(const PrimObjPtr&) const;
+	PrimObjPtr lt(const PrimObjPtr&) const;
+	PrimObjPtr lte(const PrimObjPtr&) const;
+	PrimObjPtr eq(const PrimObjPtr&) const;
+	PrimObjPtr neq(const PrimObjPtr&) const;
+	PrimObjPtr at(const PrimObjPtr&) const;
 
 	const std::vector<PrimObjPtr> data;
 };
@@ -146,27 +156,54 @@ struct ArrObj : public PrimObj {
 struct CallableObj : public PrimObj {
 	virtual ~CallableObj() = default;
 
-	bool to_bool() const { return true; }
-
-  double to_double() const 
-    { throw std::runtime_error("No type conversion from callable to double"); }
 	virtual std::string to_str() const { return "<callable>"; }
-  std::vector<PrimObjPtr> to_arr() const
-    { throw std::runtime_error("No type conversion from callable to array"); }
-  DomainPtr to_set() const
-    { throw std::runtime_error("No type conversion from callable to set"); }
 	virtual unsigned arity() const = 0;
 
 	virtual PrimObjPtr call(const std::list<PrimObjPtr> &args) const = 0;
 };
 
+struct ToInt : public CallableObj {
+	ToInt() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 1; }
+};
+struct ToDouble : public CallableObj {
+	ToDouble() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 1; }
+};
+struct ToStr : public CallableObj {
+	ToStr() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 1; }
+};
+struct ToBool : public CallableObj {
+	ToBool() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 1; }
+};
+struct ToArr : public CallableObj {
+	ToArr() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 2; }
+};
+struct ToSet : public CallableObj {
+	ToSet() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 1; }
+};
+
 // Uses FuncStmt
 // might change this since this isn't really my style
 class FuncStmt;
+class Env;
 struct FuncObj : public CallableObj {
   const std::shared_ptr<FuncStmt> decl;
+  const std::shared_ptr<Env> closure;
 
-  FuncObj(const std::shared_ptr<FuncStmt> &_decl) : decl(_decl) { }
+  FuncObj(const std::shared_ptr<FuncStmt> &_decl, 
+          const std::shared_ptr<Env> &_closure) 
+  : decl(_decl), closure(_closure) { } 
   std::string to_str() const;
   unsigned arity() const;
 
@@ -175,30 +212,17 @@ struct FuncObj : public CallableObj {
 
 
 struct SetObj : public PrimObj {
-	SetObj(const SetPtr &_data) : data(_data) { } // nonexplicit
-	// SetObj(const SetPtr &_data, const SetPtr &_operand)
- //  : data(_data), operand(_operand) { } // nonexplicit
+	SetObj(const DomainPtr &_data) : data(_data) { } // nonexplicit
 	std::string to_str() const;
-  double to_double() const
-    { throw std::runtime_error("No type conversion from set to double"); }
 	bool to_bool() const;
-  std::vector<PrimObjPtr> to_arr() const;
+  std::vector<PrimObjPtr> to_arr(const size_t) const;
   DomainPtr to_set() const;
 
-	// PrimObjPtr operator!() const;
-	PrimObjPtr operator+(const PrimObj&) const;
-	// PrimObjPtr operator-(const PrimObj&) const;
-	// PrimObjPtr operator*(const PrimObj&) const;
-	// PrimObjPtr operator>(const PrimObj&) const;
-	// PrimObjPtr operator>=(const PrimObj&) const;
-	// PrimObjPtr operator<(const PrimObj&) const;
-	// PrimObjPtr operator<=(const PrimObj&) const;
-	// PrimObjPtr operator==(const PrimObj&) const;
-	// PrimObjPtr operator!=(const PrimObj&) const;
-	// PrimObjPtr operator&&(const PrimObj&) const;
-	// PrimObjPtr operator||(const PrimObj&) const;
+	PrimObjPtr add(const PrimObjPtr&) const;
+	PrimObjPtr sub(const PrimObjPtr&) const;
+	PrimObjPtr mul(const PrimObjPtr&) const;
 
-	const SetPtr data;
+	const DomainPtr data;
 };
 
 #endif

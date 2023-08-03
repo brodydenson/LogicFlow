@@ -13,7 +13,7 @@ enum TokType {
 	LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
   LEFT_BRACKET, RIGHT_BRACKET,
 	COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
-  PIPE,
+  PIPE, UNDERSCORE,
 
 	// One or multiple character tokens.
 	BANG, BANG_EQUAL,
@@ -21,6 +21,7 @@ enum TokType {
 	GREATER, GREATER_EQUAL,
 	LESS, LESS_EQUAL,
   COLON_COLON, SEMICOLON_SEMICOLON,
+  PLUS_PLUS, MINUS_MINUS,
 	// LitTokerals.
 	IDENTIFIER, STRING, NUMBER,
 
@@ -45,10 +46,8 @@ public:
 
 	Tok(tok_t::TokType _type, unsigned _line=0) : type(_type), line(_line) { } 
 
-	Tok(tok_t::TokType _type, double _lit_obj, unsigned _line=0) 
-		: type(_type), lit_obj(std::make_shared<DoubleObj>(_lit_obj)), line(_line) { } 
-	Tok(tok_t::TokType _type, const std::string &_lit_obj, unsigned _line=0) 
-		: type(_type), lit_obj(std::make_shared<StrObj>(_lit_obj)), line(_line) { } 
+	Tok(tok_t::TokType _type, const PrimObjPtr &_lit_obj, unsigned _line=0) 
+		: type(_type), lit_obj(_lit_obj), line(_line) { } 
 	
 	Tok(const std::string &type_str, unsigned _line=0)
 	  : type(tok_t::str_to_tok[type_str]), line(_line) { } 

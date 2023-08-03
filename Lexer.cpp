@@ -78,14 +78,21 @@ TokPtr Lexer::next_tok() {
 		{ cur_it = key_end; return make_shared<Tok>(string(beg, key_end), cur_line); }
 	else if (id_lit_end != cur_it) 
 		{ cur_it = id_lit_end; return make_shared<Tok>(TokType::IDENTIFIER, 
-								string(beg, id_lit_end), cur_line); }
+								make_shared<StrObj>(string(beg, id_lit_end)), cur_line); }
 	// String literal needs to trim off the excess
 	else if (str_lit_end != cur_it) 
 		{ cur_it = str_lit_end; return make_shared<Tok>(TokType::STRING, 
-								 string(beg+1, str_lit_end-1), cur_line); }
-	else if (num_lit_end != cur_it) 
-		{ cur_it = num_lit_end; return make_shared<Tok>(TokType::NUMBER, 
-								 stod(string(beg, num_lit_end)), cur_line); }
+								 make_shared<StrObj>(string(beg+1, str_lit_end-1)), cur_line); }
+	else if (num_lit_end != cur_it) {
+    cur_it = num_lit_end; 
+    const double num = stod(string(beg, num_lit_end));
+    PrimObjPtr lit_obj;
+    if (num == static_cast<int>(num))
+      lit_obj = make_shared<IntObj>(num);
+    else
+      lit_obj = make_shared<DoubleObj>(num);
+    return make_shared<Tok>(TokType::NUMBER, lit_obj, cur_line);
+  }
 
   throw ProgError("Token unrecognizable", make_shared<Tok>(TokType::END, cur_line));
 	// throw logic_error("No matching case for current character"); 

@@ -50,12 +50,14 @@ private:
 	ExprPtr logic_and();
 	ExprPtr equality();
 	ExprPtr comparison();
+  ExprPtr array_op();
 	ExprPtr term();
 	ExprPtr factor();
 	ExprPtr unary();
 	ExprPtr array();
 	ExprPtr set();
 	ExprPtr call();
+  ExprPtr index();
 	ExprPtr primary();
 };
 

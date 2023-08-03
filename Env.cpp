@@ -8,7 +8,7 @@ using std::dynamic_pointer_cast;
 using std::string;
 using tok_t::TokType;
 
-PrimObjPtr Env::define(TokPtr name, PrimObjPtr val) {
+PrimObjPtr Env::define(const TokPtr &name, const PrimObjPtr &val) {
 	if (name->type != TokType::IDENTIFIER)
 		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
@@ -16,7 +16,7 @@ PrimObjPtr Env::define(TokPtr name, PrimObjPtr val) {
 	return val;
 }
 
-PrimObjPtr Env::assign(TokPtr name, PrimObjPtr val) {
+PrimObjPtr Env::assign(const TokPtr &name, const PrimObjPtr &val) {
 	if (name->type != TokType::IDENTIFIER)
 		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
@@ -32,7 +32,7 @@ PrimObjPtr Env::assign(TokPtr name, PrimObjPtr val) {
 	return val;
 }
 
-PrimObjPtr Env::get(TokPtr name) const {
+PrimObjPtr Env::get(const TokPtr &name) const {
 	if (name->type != TokType::IDENTIFIER)
 		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
@@ -47,7 +47,7 @@ PrimObjPtr Env::get(TokPtr name) const {
 	return found->second;
 }
 
-bool Env::contains(TokPtr name) const {
+bool Env::contains(const TokPtr &name) const {
 	if (name->type != TokType::IDENTIFIER)
 		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;

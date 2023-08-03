@@ -15,154 +15,239 @@ using std::vector;
 using std::dynamic_pointer_cast;
 using std::string;
 
-PrimObjPtr PrimObj::operator-() const { 
+string PrimObj::to_str() const {
+	throw runtime_error("Type does not support conversion to string");
+}
+int PrimObj::to_int() const {
+	throw runtime_error("Type does not support conversion to int");
+}
+double PrimObj::to_double() const {
+	throw runtime_error("Type does not support conversion to double");
+}
+bool PrimObj::to_bool() const {
+	throw runtime_error("Type does not support conversion to bool");
+}
+vector<PrimObjPtr> PrimObj::to_arr(const size_t) const {
+	throw runtime_error("Type does not support conversion to array");
+}
+DomainPtr PrimObj::to_set() const {
+	throw runtime_error("Type does not support conversion to set");
+}
+PrimObjPtr PrimObj::len() const { 
+	throw runtime_error("Type does not support grouping '|' operator");
+}
+PrimObjPtr PrimObj::push(const PrimObjPtr&) const {
+	throw runtime_error("Type does not support '++' operator");
+}
+PrimObjPtr PrimObj::pop(const PrimObjPtr&) const {
+	throw runtime_error("Type does not support '--' operator");
+}
+PrimObjPtr PrimObj::negative() const { 
 	throw runtime_error("Type does not support unary '-' operator");
 }
-PrimObjPtr PrimObj::operator!() const { 
+PrimObjPtr PrimObj::negate() const { 
 	throw runtime_error("Type does not support unary '!' operator");
 }
-PrimObjPtr PrimObj::operator+(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::add(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '+' operator");
 }
-PrimObjPtr PrimObj::operator-(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::sub(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '-' operator");
 }
-PrimObjPtr PrimObj::operator*(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::mul(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '*' operator");
 }
-PrimObjPtr PrimObj::operator/(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::div(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '/' operator");
 }
-PrimObjPtr PrimObj::operator>(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::gt(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '>' operator");
 }
-PrimObjPtr PrimObj::operator>=(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::gte(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '>=' operator");
 }
-PrimObjPtr PrimObj::operator<(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::lt(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '<' operator");
 }
-PrimObjPtr PrimObj::operator<=(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::lte(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '<=' operator");
 }
-PrimObjPtr PrimObj::operator==(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::eq(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '==' operator");
 }
-PrimObjPtr PrimObj::operator!=(const PrimObj &rhs) const { 
+PrimObjPtr PrimObj::neq(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '!=' operator");
 }
-PrimObjPtr PrimObj::operator&&(const PrimObj &rhs) const { 
-	throw runtime_error("Type does not support 'and' operator");
+PrimObjPtr PrimObj::conj(const PrimObjPtr &rhs) const { 
+  return make_shared<BoolObj>(to_bool() && rhs->to_bool());
 }
-PrimObjPtr PrimObj::operator||(const PrimObj &rhs) const { 
-	throw runtime_error("Type does not support 'or' operator");
+PrimObjPtr PrimObj::disj(const PrimObjPtr &rhs) const { 
+  return make_shared<BoolObj>(to_bool() || rhs->to_bool());
+}
+PrimObjPtr PrimObj::at(const PrimObjPtr &rhs) const { 
+	throw runtime_error("Type does not support '_' operator");
 }
 
-PrimObjPtr DoubleObj::operator-() const { 
+PrimObjPtr IntObj::negative() const { 
+	return make_shared<IntObj>(-data);
+}
+PrimObjPtr IntObj::add(const PrimObjPtr &rhs) const { 
+  const double res = data + rhs->to_double();
+  if (res == static_cast<int>(res))
+    return make_shared<IntObj>(res);
+  else
+    return make_shared<DoubleObj>(res);
+}
+PrimObjPtr IntObj::sub(const PrimObjPtr &rhs) const { 
+  const double res = data - rhs->to_double();
+  if (res == static_cast<int>(res))
+    return make_shared<IntObj>(res);
+  else
+    return make_shared<DoubleObj>(res);
+}
+PrimObjPtr IntObj::mul(const PrimObjPtr &rhs) const { 
+  const double res = data * rhs->to_double();
+  if (res == static_cast<int>(res))
+    return make_shared<IntObj>(res);
+  else
+    return make_shared<DoubleObj>(res);
+}
+PrimObjPtr IntObj::div(const PrimObjPtr &rhs) const { 
+  if (rhs->to_double() == 0)
+    throw runtime_error("Division by zero");
+  const double res = data / rhs->to_double();
+  if (res == static_cast<int>(res))
+    return make_shared<IntObj>(res);
+  else
+    return make_shared<DoubleObj>(res);
+}
+PrimObjPtr IntObj::gt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data > rhs->to_double());
+}
+PrimObjPtr IntObj::gte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data >= rhs->to_double());
+}
+PrimObjPtr IntObj::lt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data < rhs->to_double());
+}
+PrimObjPtr IntObj::lte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data <= rhs->to_double());
+}
+PrimObjPtr IntObj::eq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data == rhs->to_double());
+}
+PrimObjPtr IntObj::neq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data != rhs->to_double());
+}
+
+PrimObjPtr DoubleObj::negative() const { 
 	return make_shared<DoubleObj>(-data);
 }
-PrimObjPtr DoubleObj::operator!() const { 
-	return make_shared<DoubleObj>(!data);
+PrimObjPtr DoubleObj::add(const PrimObjPtr &rhs) const { 
+	return make_shared<DoubleObj>(data + rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator+(const PrimObj &rhs) const { 
-	return make_shared<DoubleObj>(data + rhs.to_double());
+PrimObjPtr DoubleObj::sub(const PrimObjPtr &rhs) const { 
+	return make_shared<DoubleObj>(data - rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator-(const PrimObj &rhs) const { 
-	return make_shared<DoubleObj>(data - rhs.to_double());
+PrimObjPtr DoubleObj::mul(const PrimObjPtr &rhs) const { 
+	return make_shared<DoubleObj>(data * rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator*(const PrimObj &rhs) const { 
-	return make_shared<DoubleObj>(data * rhs.to_double());
-}
-PrimObjPtr DoubleObj::operator/(const PrimObj &rhs) const { 
-  if (rhs.to_double() == 0)
+PrimObjPtr DoubleObj::div(const PrimObjPtr &rhs) const { 
+  if (rhs->to_double() == 0)
     throw runtime_error("Division by zero");
-	return make_shared<DoubleObj>(data / rhs.to_double());
+	return make_shared<DoubleObj>(data / rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator>(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data > rhs.to_double());
+PrimObjPtr DoubleObj::gt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data > rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator>=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data >= rhs.to_double());
+PrimObjPtr DoubleObj::gte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data >= rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator<(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data < rhs.to_double());
+PrimObjPtr DoubleObj::lt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data < rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator<=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data <= rhs.to_double());
+PrimObjPtr DoubleObj::lte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data <= rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator==(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data == rhs.to_double());
+PrimObjPtr DoubleObj::eq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data == rhs->to_double());
 }
-PrimObjPtr DoubleObj::operator!=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data != rhs.to_double());
-}
-PrimObjPtr DoubleObj::operator&&(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(to_bool() && rhs.to_bool());
-}
-PrimObjPtr DoubleObj::operator||(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(to_bool() || rhs.to_bool());
+PrimObjPtr DoubleObj::neq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data != rhs->to_double());
 }
 
-PrimObjPtr StrObj::operator+(const PrimObj &rhs) const { 
-	return make_shared<StrObj>(data + rhs.to_str());
+PrimObjPtr StrObj::add(const PrimObjPtr &rhs) const { 
+	return make_shared<StrObj>(data + rhs->to_str());
 }
-PrimObjPtr StrObj::operator>(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data > rhs.to_str());
+PrimObjPtr StrObj::gt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data > rhs->to_str());
 }
-PrimObjPtr StrObj::operator>=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data >= rhs.to_str());
+PrimObjPtr StrObj::gte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data >= rhs->to_str());
 }
-PrimObjPtr StrObj::operator<(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data < rhs.to_str());
+PrimObjPtr StrObj::lt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data < rhs->to_str());
 }
-PrimObjPtr StrObj::operator<=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data <= rhs.to_str());
+PrimObjPtr StrObj::lte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data <= rhs->to_str());
 }
-PrimObjPtr StrObj::operator==(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data == rhs.to_str());
+PrimObjPtr StrObj::eq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data == rhs->to_str());
 }
-PrimObjPtr StrObj::operator!=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data != rhs.to_str());
-}
-PrimObjPtr StrObj::operator&&(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(to_bool() && rhs.to_bool());
-}
-PrimObjPtr StrObj::operator||(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(to_bool() || rhs.to_bool());
+PrimObjPtr StrObj::neq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data != rhs->to_str());
 }
 
-PrimObjPtr BoolObj::operator!() const { 
+PrimObjPtr BoolObj::negate() const { 
 	return make_shared<BoolObj>(!data);
 }
-PrimObjPtr BoolObj::operator+(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data + rhs.to_bool());
+PrimObjPtr BoolObj::add(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data + rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator*(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data * rhs.to_bool());
+PrimObjPtr BoolObj::mul(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data * rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator>(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data > rhs.to_bool());
+PrimObjPtr BoolObj::gt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data > rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator>=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data >= rhs.to_bool());
+PrimObjPtr BoolObj::gte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data >= rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator<(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data < rhs.to_bool());
+PrimObjPtr BoolObj::lt(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data < rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator<=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data <= rhs.to_bool());
+PrimObjPtr BoolObj::lte(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data <= rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator==(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data == rhs.to_bool());
+PrimObjPtr BoolObj::eq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data == rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator!=(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data != rhs.to_bool());
+PrimObjPtr BoolObj::neq(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data != rhs->to_bool());
 }
-PrimObjPtr BoolObj::operator&&(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data && rhs.to_bool());
+
+PrimObjPtr ArrObj::push(const PrimObjPtr &rhs) const {
+  vector<PrimObjPtr> new_arr = data;
+  const auto rhs_arr_p = dynamic_pointer_cast<ArrObj>(rhs);
+  if (rhs_arr_p) {
+    const auto rhs_arr = rhs_arr_p->data;
+    new_arr.insert(new_arr.cend(), rhs_arr.cbegin(), rhs_arr.cend());
+  } else new_arr.push_back(rhs);
+
+  return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr BoolObj::operator||(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(data || rhs.to_bool());
+PrimObjPtr ArrObj::pop(const PrimObjPtr &rhs) const {
+  const size_t index = rhs->to_int();
+  if (index < 1 || index > len()->to_int())
+    throw runtime_error("Cannot remove an element out of range");
+
+  vector<PrimObjPtr> new_arr = data;
+  new_arr.erase(new_arr.cbegin() + index - 1);
+
+  return make_shared<ArrObj>(new_arr);
+}
+PrimObjPtr ArrObj::len() const { 
+	return make_shared<IntObj>(data.size());
 }
 
 string ArrObj::to_str() const {
@@ -171,208 +256,230 @@ string ArrObj::to_str() const {
     s += it + 1 != data.cend() ? ((*it)->to_str() + ", ") : ((*it)->to_str() + "]");
   return s;
 }
-DomainPtr ArrObj::to_set() const { return make_shared<DirectDomain>(data); }
+DomainPtr ArrObj::to_set() const { return make_shared<ArrDomain>(data); }
 
-PrimObjPtr ArrObj::operator-() const { 
+PrimObjPtr ArrObj::negative() const { 
   auto new_arr = data;
   for (auto &i : new_arr)
-    i = -*i;
+    i = i->negative();
 	return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr ArrObj::operator!() const { 
+PrimObjPtr ArrObj::negate() const { 
   auto new_arr = data;
   for (auto &i : new_arr)
-    i = !*i;
+    i = i->negate();
 	return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr ArrObj::operator+(const PrimObj &rhs) const { 
+PrimObjPtr ArrObj::add(const PrimObjPtr &rhs) const { 
   // I dont even know how to comment on this garbage solution
   auto new_arr = data;
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = new_arr.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != new_arr.end() && rhs_it != rhs_arr->data.cend()) {
-      *lhs_it = **lhs_it + **rhs_it;
+      *lhs_it = (*lhs_it)->add(*rhs_it);
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (auto &i : new_arr)
-      i = *i + rhs;
+      i = i->add(rhs);
   }
     
 	return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr ArrObj::operator-(const PrimObj &rhs) const { 
+PrimObjPtr ArrObj::sub(const PrimObjPtr &rhs) const { 
   auto new_arr = data;
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = new_arr.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != new_arr.end() && rhs_it != rhs_arr->data.cend()) {
-      *lhs_it = **lhs_it - **rhs_it;
+      *lhs_it = (*lhs_it)->sub(*rhs_it);
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (auto &i : new_arr)
-      i = *i - rhs;
+      i = i->sub(rhs);
   }
 
 	return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr ArrObj::operator*(const PrimObj &rhs) const { 
+PrimObjPtr ArrObj::mul(const PrimObjPtr &rhs) const { 
   auto new_arr = data;
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = new_arr.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != new_arr.end() && rhs_it != rhs_arr->data.cend()) {
-      *lhs_it = **lhs_it * **rhs_it;
+      *lhs_it = (*lhs_it)->mul(*rhs_it);
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (auto &i : new_arr)
-      i = *i * rhs;
+      i = i->mul(rhs);
   }
 
 	return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr ArrObj::operator/(const PrimObj &rhs) const { 
+PrimObjPtr ArrObj::div(const PrimObjPtr &rhs) const { 
   auto new_arr = data;
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = new_arr.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != new_arr.end() && rhs_it != rhs_arr->data.cend()) {
-      *lhs_it = **lhs_it / **rhs_it;
+      *lhs_it = (*lhs_it)->add(*rhs_it);
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (auto &i : new_arr)
-      i = *i / rhs;
+      i = i->div(rhs);
   }
 
 	return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr ArrObj::operator>(const PrimObj &rhs) const { 
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+PrimObjPtr ArrObj::gt(const PrimObjPtr &rhs) const { 
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = data.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != data.end() && rhs_it != rhs_arr->data.cend()) {
-      const auto cmp = **lhs_it > **rhs_it;
+      const auto cmp = (*lhs_it)->gt(*rhs_it);
       if (!cmp->to_bool()) return cmp;
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (const auto &i : data) {
-      const auto cmp = *i > rhs;
+      const auto cmp = i->gt(rhs);
       if (!cmp->to_bool()) return cmp;
     }
   }
 
 	return make_shared<BoolObj>(true);
 }
-PrimObjPtr ArrObj::operator>=(const PrimObj &rhs) const { 
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+PrimObjPtr ArrObj::gte(const PrimObjPtr &rhs) const { 
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = data.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != data.end() && rhs_it != rhs_arr->data.cend()) {
-      const auto cmp = **lhs_it >= **rhs_it;
+      const auto cmp = (*lhs_it)->gte(*rhs_it);
       if (!cmp->to_bool()) return cmp;
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (const auto &i : data) {
-      const auto cmp = *i >= rhs;
+      const auto cmp = i->gte(rhs);
       if (!cmp->to_bool()) return cmp;
     }
   }
 
 	return make_shared<BoolObj>(true);
 }
-PrimObjPtr ArrObj::operator<(const PrimObj &rhs) const { 
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+PrimObjPtr ArrObj::lt(const PrimObjPtr &rhs) const { 
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = data.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != data.end() && rhs_it != rhs_arr->data.cend()) {
-      const auto cmp = **lhs_it < **rhs_it;
+      const auto cmp = (*lhs_it)->lt(*rhs_it);
       if (!cmp->to_bool()) return cmp;
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (const auto &i : data) {
-      const auto cmp = *i < rhs;
+      const auto cmp = i->lt(rhs);
       if (!cmp->to_bool()) return cmp;
     }
   }
 
 	return make_shared<BoolObj>(true);
 }
-PrimObjPtr ArrObj::operator<=(const PrimObj &rhs) const { 
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+PrimObjPtr ArrObj::lte(const PrimObjPtr &rhs) const { 
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = data.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != data.end() && rhs_it != rhs_arr->data.cend()) {
-      const auto cmp = **lhs_it <= **rhs_it;
+      const auto cmp = (*lhs_it)->lte(*rhs_it);
       if (!cmp->to_bool()) return cmp;
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (const auto &i : data) {
-      const auto cmp = *i <= rhs;
+      const auto cmp = i->lte(rhs);
       if (!cmp->to_bool()) return cmp;
     }
   }
 
 	return make_shared<BoolObj>(true);
 }
-PrimObjPtr ArrObj::operator==(const PrimObj &rhs) const { 
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+PrimObjPtr ArrObj::eq(const PrimObjPtr &rhs) const { 
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = data.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != data.end() && rhs_it != rhs_arr->data.cend()) {
-      const auto cmp = **lhs_it == **rhs_it;
+      const auto cmp = (*lhs_it)->eq(*rhs_it);
       if (!cmp->to_bool()) return cmp;
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (const auto &i : data) {
-      const auto cmp = *i == rhs;
+      const auto cmp = i->eq(rhs);
       if (!cmp->to_bool()) return cmp;
     }
   }
 
 	return make_shared<BoolObj>(true);
 }
-PrimObjPtr ArrObj::operator!=(const PrimObj &rhs) const {
-  const auto rhs_arr = dynamic_cast<const ArrObj*>(&rhs);
+PrimObjPtr ArrObj::neq(const PrimObjPtr &rhs) const {
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
   if (rhs_arr != nullptr) {
     auto lhs_it = data.begin();
     auto rhs_it = rhs_arr->data.cbegin();
     while (lhs_it != data.end() && rhs_it != rhs_arr->data.cend()) {
-      const auto cmp = **lhs_it != **rhs_it;
+      const auto cmp = (*lhs_it)->neq(*rhs_it);
       if (!cmp->to_bool()) return cmp;
       ++lhs_it; ++rhs_it;
     }
   } else {
     for (const auto &i : data) {
-      const auto cmp = *i != rhs;
+      const auto cmp = i->neq(rhs);
       if (!cmp->to_bool()) return cmp;
     }
   }
 
 	return make_shared<BoolObj>(true);
 }
-PrimObjPtr ArrObj::operator&&(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(to_bool());
+PrimObjPtr ArrObj::at(const PrimObjPtr &rhs) const {
+  const size_t i = rhs->to_double();
+  try {
+    return data.at(i-1);
+  } catch (const std::out_of_range &e) {
+    throw runtime_error("Index out of range");
+  }
 }
-PrimObjPtr ArrObj::operator||(const PrimObj &rhs) const { 
-	return make_shared<BoolObj>(to_bool());
+
+PrimObjPtr ToInt::call(const list<PrimObjPtr> &args) const {
+  return make_shared<IntObj>((*args.cbegin())->to_int());
+}
+PrimObjPtr ToDouble::call(const list<PrimObjPtr> &args) const {
+  return make_shared<DoubleObj>((*args.cbegin())->to_double());
+}
+PrimObjPtr ToStr::call(const list<PrimObjPtr> &args) const {
+  return make_shared<StrObj>((*args.cbegin())->to_str());
+}
+PrimObjPtr ToBool::call(const list<PrimObjPtr> &args) const {
+  return make_shared<BoolObj>((*args.cbegin())->to_bool());
+}
+PrimObjPtr ToArr::call(const list<PrimObjPtr> &args) const {
+  const size_t max_comp = args.size() > 1 ? (*next(args.cbegin()))->to_int() : DEF_COMP;
+  return make_shared<ArrObj>((*args.cbegin())->to_arr(max_comp));
+}
+PrimObjPtr ToSet::call(const list<PrimObjPtr> &args) const {
+  return make_shared<SetObj>((*args.cbegin())->to_set());
 }
 
 string FuncObj::to_str() const { 
@@ -383,8 +490,8 @@ unsigned FuncObj::arity() const { return decl->params.size(); }
 
 PrimObjPtr FuncObj::call(const list<PrimObjPtr> &args) const {
   // Every call gets its own environment 
-  // This is necessary for recursion to work
-  const EnvPtr env = make_shared<Env>(Interpreter::global_env);
+  // This is necessary for recursion to work as well with local functions
+  const EnvPtr env = make_shared<Env>(closure);
 
   auto param_it = decl->params.cbegin();
   auto arg_it = args.cbegin();
@@ -393,32 +500,44 @@ PrimObjPtr FuncObj::call(const list<PrimObjPtr> &args) const {
 
   try { decl->body->exec(env); }
   catch (ReturnExcept return_val) { return return_val.get_val(); }
-  return make_shared<DoubleObj>(0);
+  return make_shared<IntObj>(0);
 }
 
 string SetObj::to_str() const {
-  constexpr unsigned limit = 5;
-  string s = "{";
-  const auto vec = data->to_vec();
+  constexpr unsigned text_limit = 10;
+  string s = "{ ";
+  const auto finite_set = data->to_finite();
 
-  for (size_t i = 0; i < vec.size(); ++i) {
-    s += vec[i]->to_str();
+  size_t added = 0;
+  for (auto it = finite_set.cbegin(); it != finite_set.cend(); ++it, ++added) {
+    s += (*it)->to_str();
 
-    if (i+1 < limit && i != vec.size() - 1)
+    if (added+1 < text_limit && it != prev(finite_set.cend()))
       s += ", ";
-    else if (i+1 >= limit) {
+    else if (finite_set.size() > text_limit) {
       s += ", ...";
       break;
     }
   }
-  return s + "}";
+  return s + " }";
 }
 
-bool SetObj::to_bool() const { return data->size() > 0; }
-vector<PrimObjPtr> SetObj::to_arr() const { return data->to_vec(); }
+bool SetObj::to_bool() const { return data->to_finite(1).size() != 0; }
+vector<PrimObjPtr> SetObj::to_arr(const size_t max_size=DEF_COMP) const {
+  const auto s = data->to_finite(max_size);
+  return vector<PrimObjPtr>(s.cbegin(), s.cend());
+}
 DomainPtr SetObj::to_set() const { return data; }
 
-PrimObjPtr SetObj::operator+(const PrimObj &rhs) const { 
-  const auto new_set = make_shared<MySet>(data->domain, data->func, UNION, rhs.to_set());
-  return make_shared<SetObj>(new_set);
+PrimObjPtr SetObj::add(const PrimObjPtr &rhs) const { 
+  const auto set_op = make_shared<SetOp>(data, rhs->to_set(), UNION);
+  return make_shared<SetObj>(set_op);
+}
+PrimObjPtr SetObj::mul(const PrimObjPtr &rhs) const { 
+  const auto set_op = make_shared<SetOp>(data, rhs->to_set(), INTERSECTION);
+  return make_shared<SetObj>(set_op);
+}
+PrimObjPtr SetObj::sub(const PrimObjPtr &rhs) const { 
+  const auto set_op = make_shared<SetOp>(data, rhs->to_set(), DIFFERENCE);
+  return make_shared<SetObj>(set_op);
 }

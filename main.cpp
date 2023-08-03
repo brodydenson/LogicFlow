@@ -27,6 +27,8 @@ int main() {
   const string s = buffer.str();
   file.close();
 
+  Interpreter::build_env();
+
   Parser parser(s);
   Interpreter::set_parser(parser);
   Interpreter::interpret();
