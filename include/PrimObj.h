@@ -32,7 +32,7 @@ struct PrimObj {
                                          const size_t max_comp=DEF_COMP) const;
   virtual DomainPtr to_set() const;
 
-  virtual PrimObjPtr len() const;
+  virtual PrimObjPtr bar() const;
 	virtual PrimObjPtr negative() const;
 	virtual PrimObjPtr negate() const;
   virtual PrimObjPtr push(const PrimObjPtr&) const;
@@ -41,6 +41,7 @@ struct PrimObj {
 	virtual PrimObjPtr sub(const PrimObjPtr&) const;
 	virtual PrimObjPtr mul(const PrimObjPtr&) const;
 	virtual PrimObjPtr div(const PrimObjPtr&) const;
+	virtual PrimObjPtr pow(const PrimObjPtr&) const;
 	virtual PrimObjPtr gt(const PrimObjPtr&) const;
 	virtual PrimObjPtr gte(const PrimObjPtr&) const;
 	virtual PrimObjPtr lt(const PrimObjPtr&) const;
@@ -59,11 +60,13 @@ struct IntObj : public PrimObj {
   double to_double() const { return data; }
 	bool to_bool() const { return data != 0; }
 
+	PrimObjPtr bar() const;
 	PrimObjPtr negative() const;
 	PrimObjPtr add(const PrimObjPtr&) const;
 	PrimObjPtr sub(const PrimObjPtr&) const;
 	PrimObjPtr mul(const PrimObjPtr&) const;
 	PrimObjPtr div(const PrimObjPtr&) const;
+	PrimObjPtr pow(const PrimObjPtr&) const;
 	PrimObjPtr gt(const PrimObjPtr&) const;
 	PrimObjPtr gte(const PrimObjPtr&) const;
 	PrimObjPtr lt(const PrimObjPtr&) const;
@@ -81,11 +84,13 @@ struct DoubleObj : public PrimObj {
   double to_double() const { return data; }
 	bool to_bool() const { return data != 0; }
 
+	PrimObjPtr bar() const;
 	PrimObjPtr negative() const;
 	PrimObjPtr add(const PrimObjPtr&) const;
 	PrimObjPtr sub(const PrimObjPtr&) const;
 	PrimObjPtr mul(const PrimObjPtr&) const;
 	PrimObjPtr div(const PrimObjPtr&) const;
+	PrimObjPtr pow(const PrimObjPtr&) const;
 	PrimObjPtr gt(const PrimObjPtr&) const;
 	PrimObjPtr gte(const PrimObjPtr&) const;
 	PrimObjPtr lt(const PrimObjPtr&) const;
@@ -101,6 +106,7 @@ struct StrObj : public PrimObj {
 	std::string to_str() const { return data; }
 	bool to_bool() const { return data.length() != 0; }
 
+	PrimObjPtr bar() const;
 	PrimObjPtr add(const PrimObjPtr&) const;
 	PrimObjPtr gt(const PrimObjPtr&) const;
 	PrimObjPtr gte(const PrimObjPtr&) const;
@@ -137,7 +143,7 @@ struct ArrObj : public PrimObj {
   std::vector<PrimObjPtr> to_arr(const size_t) const { return data; }
   DomainPtr to_set() const;
 
-  PrimObjPtr len() const;
+  PrimObjPtr bar() const;
 	PrimObjPtr negative() const;
 	PrimObjPtr negate() const;
   PrimObjPtr push(const PrimObjPtr&) const;
@@ -233,6 +239,7 @@ struct SetObj : public PrimObj {
   std::vector<PrimObjPtr> to_arr(const size_t, const size_t) const;
   DomainPtr to_set() const;
 
+	PrimObjPtr bar() const;
 	PrimObjPtr add(const PrimObjPtr&) const;
 	PrimObjPtr sub(const PrimObjPtr&) const;
 	PrimObjPtr mul(const PrimObjPtr&) const;

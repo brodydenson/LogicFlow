@@ -53,6 +53,7 @@ private:
   ExprPtr array_op();
 	ExprPtr term();
 	ExprPtr factor();
+	ExprPtr exponent();
 	ExprPtr unary();
 	ExprPtr array();
 	ExprPtr set();

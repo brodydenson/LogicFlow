@@ -24,6 +24,8 @@ PrimObjPtr BinOp::eval(const EnvPtr &env) const {
 		return lhs->eval(env)->mul(rhs->eval(env));
 		case TokType::SLASH:
 		return lhs->eval(env)->div(rhs->eval(env));
+		case TokType::CARROT:
+		return lhs->eval(env)->pow(rhs->eval(env));
 		case TokType::GREATER:
 		return lhs->eval(env)->gt(rhs->eval(env));
 		case TokType::GREATER_EQUAL:
@@ -58,7 +60,7 @@ PrimObjPtr Unary::eval(const EnvPtr &env) const {
 		case TokType::MINUS:
 		return rhs->eval(env)->negative();
 		case TokType::PIPE:
-		return rhs->eval(env)->len();
+		return rhs->eval(env)->bar();
 		default:
 		throw ProgError("Invalid unary operator", op);
 	}

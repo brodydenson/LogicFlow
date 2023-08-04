@@ -2,6 +2,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <cmath>
 #include "include/Exception.h"
 #include "include/PrimObj.h"
 #include "include/Stmt.h"
@@ -33,7 +34,7 @@ vector<PrimObjPtr> PrimObj::to_arr(const size_t, const size_t) const {
 DomainPtr PrimObj::to_set() const {
 	throw runtime_error("Type does not support conversion to set");
 }
-PrimObjPtr PrimObj::len() const { 
+PrimObjPtr PrimObj::bar() const { 
 	throw runtime_error("Type does not support grouping '|' operator");
 }
 PrimObjPtr PrimObj::push(const PrimObjPtr&) const {
@@ -59,6 +60,9 @@ PrimObjPtr PrimObj::mul(const PrimObjPtr &rhs) const {
 }
 PrimObjPtr PrimObj::div(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '/' operator");
+}
+PrimObjPtr PrimObj::pow(const PrimObjPtr &rhs) const { 
+	throw runtime_error("Type does not support '^' operator");
 }
 PrimObjPtr PrimObj::gt(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '>' operator");
@@ -88,6 +92,9 @@ PrimObjPtr PrimObj::at(const PrimObjPtr &rhs) const {
 	throw runtime_error("Type does not support '_' operator");
 }
 
+PrimObjPtr IntObj::bar() const {
+	return make_shared<IntObj>(abs(data));
+}
 PrimObjPtr IntObj::negative() const { 
 	return make_shared<IntObj>(-data);
 }
@@ -121,6 +128,13 @@ PrimObjPtr IntObj::div(const PrimObjPtr &rhs) const {
   else
     return make_shared<DoubleObj>(res);
 }
+PrimObjPtr IntObj::pow(const PrimObjPtr &rhs) const { 
+  const double res = std::pow(data, rhs->to_double());
+  if (res == static_cast<int>(res))
+    return make_shared<IntObj>(res);
+  else
+    return make_shared<DoubleObj>(res);
+}
 PrimObjPtr IntObj::gt(const PrimObjPtr &rhs) const { 
 	return make_shared<BoolObj>(data > rhs->to_double());
 }
@@ -140,6 +154,9 @@ PrimObjPtr IntObj::neq(const PrimObjPtr &rhs) const {
 	return make_shared<BoolObj>(data != rhs->to_double());
 }
 
+PrimObjPtr DoubleObj::bar() const {
+	return make_shared<DoubleObj>(abs(data));
+}
 PrimObjPtr DoubleObj::negative() const { 
 	return make_shared<DoubleObj>(-data);
 }
@@ -156,6 +173,9 @@ PrimObjPtr DoubleObj::div(const PrimObjPtr &rhs) const {
   if (rhs->to_double() == 0)
     throw runtime_error("Division by zero");
 	return make_shared<DoubleObj>(data / rhs->to_double());
+}
+PrimObjPtr DoubleObj::pow(const PrimObjPtr &rhs) const { 
+	return make_shared<DoubleObj>(std::pow(data, rhs->to_double()));
 }
 PrimObjPtr DoubleObj::gt(const PrimObjPtr &rhs) const { 
 	return make_shared<BoolObj>(data > rhs->to_double());
@@ -176,6 +196,9 @@ PrimObjPtr DoubleObj::neq(const PrimObjPtr &rhs) const {
 	return make_shared<BoolObj>(data != rhs->to_double());
 }
 
+PrimObjPtr StrObj::bar() const {
+	return make_shared<IntObj>(data.size());
+}
 PrimObjPtr StrObj::add(const PrimObjPtr &rhs) const { 
 	return make_shared<StrObj>(data + rhs->to_str());
 }
@@ -238,7 +261,7 @@ PrimObjPtr ArrObj::push(const PrimObjPtr &rhs) const {
 }
 PrimObjPtr ArrObj::pop(const PrimObjPtr &rhs) const {
   const size_t index = rhs->to_int();
-  if (index < 1 || index > len()->to_int())
+  if (index < 1 || index > bar()->to_int())
     throw runtime_error("Cannot remove an element out of range");
 
   vector<PrimObjPtr> new_arr = data;
@@ -246,7 +269,7 @@ PrimObjPtr ArrObj::pop(const PrimObjPtr &rhs) const {
 
   return make_shared<ArrObj>(new_arr);
 }
-PrimObjPtr ArrObj::len() const { 
+PrimObjPtr ArrObj::bar() const { 
 	return make_shared<IntObj>(data.size());
 }
 
@@ -540,6 +563,10 @@ vector<PrimObjPtr> SetObj::to_arr(const size_t max_size, const size_t max_comp) 
   return vector<PrimObjPtr>(s.cbegin(), s.cend());
 }
 DomainPtr SetObj::to_set() const { return data; }
+
+PrimObjPtr SetObj::bar() const {
+	return make_shared<IntObj>(data->to_finite().size());
+}
 
 PrimObjPtr SetObj::add(const PrimObjPtr &rhs) const { 
   const auto set_op = make_shared<SetOp>(data, rhs->to_set(), UNION);

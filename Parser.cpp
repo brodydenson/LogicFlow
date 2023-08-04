@@ -54,8 +54,8 @@ void Parser::print_toks() const {
 }
 
 StmtPtr Parser::declaration() {
-	if (match({TokType::FUN})) return func_declaration();
-	if (match({TokType::VAR})) return var_declaration();
+	if (match({TokType::FN})) return func_declaration();
+	if (match({TokType::LET})) return var_declaration();
 	return statement();
 }
 
@@ -302,15 +302,26 @@ ExprPtr Parser::factor() {
 	return expr;
 }
 
-
 ExprPtr Parser::unary() {
 	if (match({TokType::BANG, TokType::MINUS})) {
 		const TokPtr op = *prev(cur_tok);
-		const ExprPtr rhs = unary();
+		const ExprPtr rhs = exponent();
 		return make_shared<Unary>(rhs, op);
 	}
 
-	return array();
+	return exponent();
+}
+
+ExprPtr Parser::exponent() {
+	ExprPtr expr = array();
+
+	while (match({TokType::CARROT})) {
+		const TokPtr op = *prev(cur_tok);
+		const ExprPtr rhs = array();
+		expr = make_shared<BinOp>(expr, rhs, op);
+	}
+
+	return expr;
 }
 
 ExprPtr Parser::array() {
