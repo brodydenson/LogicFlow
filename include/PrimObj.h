@@ -140,7 +140,7 @@ struct ArrObj : public PrimObj {
 	ArrObj(const std::vector<PrimObjPtr> &_data) : data(_data) { } // nonexplicit
 	std::string to_str() const;
 	bool to_bool() const { return data.size() > 0; }
-  std::vector<PrimObjPtr> to_arr(const size_t) const { return data; }
+  std::vector<PrimObjPtr> to_arr(const size_t, const size_t) const { return data; }
   DomainPtr to_set() const;
 
   PrimObjPtr bar() const;
