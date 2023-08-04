@@ -253,8 +253,8 @@ PrimObjPtr ArrObj::len() const {
 string ArrObj::to_str() const {
   string s = "[";
   for (auto it = data.cbegin(); it != data.cend(); ++it)
-    s += it + 1 != data.cend() ? ((*it)->to_str() + ", ") : ((*it)->to_str() + "]");
-  return s;
+    s += it + 1 != data.cend() ? ((*it)->to_str() + ", ") : (*it)->to_str();
+  return s + "]";
 }
 DomainPtr ArrObj::to_set() const { return make_shared<ArrDomain>(data); }
 
@@ -475,7 +475,10 @@ PrimObjPtr ToBool::call(const list<PrimObjPtr> &args) const {
   return make_shared<BoolObj>((*args.cbegin())->to_bool());
 }
 PrimObjPtr ToArr::call(const list<PrimObjPtr> &args) const {
-  const size_t max_comp = args.size() > 1 ? (*next(args.cbegin()))->to_int() : DEF_COMP;
+  return make_shared<ArrObj>((*args.cbegin())->to_arr(DEF_COMP));
+}
+PrimObjPtr ToArrLimit::call(const list<PrimObjPtr> &args) const {
+  const size_t max_comp = (*next(args.cbegin()))->to_int();
   return make_shared<ArrObj>((*args.cbegin())->to_arr(max_comp));
 }
 PrimObjPtr ToSet::call(const list<PrimObjPtr> &args) const {
@@ -523,8 +526,8 @@ string SetObj::to_str() const {
 }
 
 bool SetObj::to_bool() const { return data->to_finite(1).size() != 0; }
-vector<PrimObjPtr> SetObj::to_arr(const size_t max_size=DEF_COMP) const {
-  const auto s = data->to_finite(max_size);
+vector<PrimObjPtr> SetObj::to_arr(const size_t max_comp) const {
+  const auto s = data->to_finite(max_comp);
   return vector<PrimObjPtr>(s.cbegin(), s.cend());
 }
 DomainPtr SetObj::to_set() const { return data; }

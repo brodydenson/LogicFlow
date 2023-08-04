@@ -14,6 +14,7 @@ public:
   static const TokPtr to_str_tok;
   static const TokPtr to_bool_tok;
   static const TokPtr to_arr_tok;
+  static const TokPtr to_arr_limit_tok;
   static const TokPtr to_set_tok;
 
   static void set_parser(const Parser &_parser) { parser = _parser; } 

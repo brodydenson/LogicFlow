@@ -83,6 +83,13 @@ PrimObjPtr Logical::eval(const EnvPtr &env) const {
 }
 
 
+PrimObjPtr Var::eval(const EnvPtr &env) const { 
+  try {
+    return env->get(name);
+  } catch (runtime_error e) {
+    throw ProgError(e.what(), name);
+  }
+}
 
 string Call::to_str() const {
   string s = callee->to_str() + '(';
@@ -93,17 +100,18 @@ string Call::to_str() const {
   return s;
 }
 PrimObjPtr Call::eval(const EnvPtr &env) const {
-	const auto func_obj = dynamic_pointer_cast<CallableObj>(callee->eval(env));
-	if (!func_obj) throw ProgError("Invalid callable object", paren);
-
 	list<PrimObjPtr> args_objs;
   for (auto &arg : args)
 		args_objs.push_back(arg->eval(env));
 
-  if (args_objs.size() > func_obj->arity()) 
-    throw ProgError(to_string(args_objs.size()) + " parameter(s) were passed while " 
-                    + to_string(func_obj->arity()) + " were expected (too many parameters given)", 
-                    paren);
+  const auto var = dynamic_pointer_cast<Var>(callee);
+	const auto func_obj = dynamic_pointer_cast<CallableObj>(var->eval(env));
+	if (!func_obj) throw ProgError("Invalid callable object", paren);
+
+  // if (args_objs.size() > func_obj->arity()) 
+  //   throw ProgError(to_string(args_objs.size()) + " parameter(s) were passed while " 
+  //                   + to_string(func_obj->arity()) + " were expected (too many parameters given)", 
+  //                   paren);
 
   try {
     return func_obj->call(args_objs);

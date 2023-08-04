@@ -14,12 +14,13 @@ const TokPtr Interpreter::z_tok = make_shared<Tok>(TokType::IDENTIFIER, make_sha
 const TokPtr Interpreter::uz_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("uZ"));
 const TokPtr Interpreter::nz_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("nZ"));
 
-const TokPtr Interpreter::to_int_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("int"));
-const TokPtr Interpreter::to_double_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("double"));
-const TokPtr Interpreter::to_str_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("str"));
-const TokPtr Interpreter::to_bool_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("bool"));
-const TokPtr Interpreter::to_arr_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("arr"));
-const TokPtr Interpreter::to_set_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("set"));
+const TokPtr Interpreter::to_int_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("int_1"));
+const TokPtr Interpreter::to_double_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("double_1"));
+const TokPtr Interpreter::to_str_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("str_1"));
+const TokPtr Interpreter::to_bool_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("bool_1"));
+const TokPtr Interpreter::to_arr_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("arr_1"));
+const TokPtr Interpreter::to_arr_limit_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("arr_2"));
+const TokPtr Interpreter::to_set_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("set_1"));
 
 void Interpreter::build_env() {
   // Pre defined sets
@@ -36,6 +37,7 @@ void Interpreter::build_env() {
   global_env->define(to_str_tok, make_shared<ToStr>());
   global_env->define(to_bool_tok, make_shared<ToBool>());
   global_env->define(to_arr_tok, make_shared<ToArr>());
+  global_env->define(to_arr_limit_tok, make_shared<ToArrLimit>());
   global_env->define(to_set_tok, make_shared<ToSet>());
 }
 

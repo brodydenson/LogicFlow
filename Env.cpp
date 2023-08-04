@@ -12,7 +12,7 @@ PrimObjPtr Env::define(const TokPtr &name, const PrimObjPtr &val) {
 	if (name->type != TokType::IDENTIFIER)
 		throw ProgError("Token type must be of type identifier", name);
 	string name_str = dynamic_pointer_cast<StrObj>(name->lit_obj)->data;
-	vals[name_str] = val;
+  vals[name_str] = val;
 	return val;
 }
 
@@ -44,7 +44,7 @@ PrimObjPtr Env::get(const TokPtr &name) const {
 		return enclosing->get(name);
 	}
 
-	return found->second;
+  return found->second;
 }
 
 bool Env::contains(const TokPtr &name) const {

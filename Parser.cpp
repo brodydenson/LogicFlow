@@ -10,6 +10,7 @@
 #include "include/Interpreter.h"
 
 using std::string;
+using std::to_string;
 using std::initializer_list;
 using std::prev;
 using std::make_shared;
@@ -71,7 +72,9 @@ StmtPtr Parser::func_declaration() {
 
 	consume(TokType::COLON_COLON, "Expect '::' before function body");
 	const StmtPtr body = block();
-	return make_shared<FuncStmt>(name, params, body);
+  const auto arity = make_shared<StrObj>("_" + to_string(params.size()));
+  const auto callee_arity = make_shared<Tok>(TokType::IDENTIFIER, name->lit_obj->add(arity), name->line);
+	return make_shared<FuncStmt>(callee_arity, params, body);
 }
 
 StmtPtr Parser::var_declaration() {
@@ -352,16 +355,29 @@ ExprPtr Parser::call() {
 }
 
 ExprPtr Parser::finish_call(const ExprPtr &callee) {
+  const auto callee_var = dynamic_pointer_cast<Var>(callee);
+  if (callee_var == nullptr) throw ProgError("Callee must be an identifier", *prev(cur_tok));
+  const auto callee_name = callee_var->get_name();
 	list<ExprPtr> args;
 
-	if (match({TokType::RIGHT_PAREN})) 
-	  return make_shared<Call>(callee, *prev(cur_tok));
+	if (match({TokType::RIGHT_PAREN}))  {
+    const auto arity = make_shared<StrObj>("_0");
+    const auto new_name = make_shared<Tok>(TokType::IDENTIFIER, callee_name->lit_obj->add(arity), 
+                                           callee_name->line);
+    const auto callee_arity = make_shared<Var>(new_name);
+	  return make_shared<Call>(callee_arity, *prev(cur_tok));
+  }
 
 	do { args.push_back(expression()); } while (match({TokType::COMMA}));
 
 	const TokPtr paren = consume(TokType::RIGHT_PAREN, "Expect ')' after arguments");
 
-	return make_shared<Call>(callee, paren, args);
+  // Supports overloaded functions
+  const auto arity = make_shared<StrObj>("_" + to_string(args.size()));
+  const auto new_name = make_shared<Tok>(TokType::IDENTIFIER, callee_name->lit_obj->add(arity), 
+                                         callee_name->line);
+  const auto callee_arity = make_shared<Var>(new_name);
+	return make_shared<Call>(callee_arity, paren, args);
 }
 
 ExprPtr Parser::index() {

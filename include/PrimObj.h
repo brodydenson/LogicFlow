@@ -185,6 +185,11 @@ struct ToBool : public CallableObj {
 struct ToArr : public CallableObj {
 	ToArr() = default;
   PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 1; }
+};
+struct ToArrLimit : public CallableObj {
+	ToArrLimit() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
 	unsigned arity() const { return 2; }
 };
 struct ToSet : public CallableObj {

@@ -82,7 +82,7 @@ public:
 	Var(const TokPtr &_name) : name(_name) { }
 
   std::string to_str() const { return name->to_str(); }
-	PrimObjPtr eval(const EnvPtr &env) const { return env->get(name); }
+	PrimObjPtr eval(const EnvPtr &env) const;
 	TokPtr get_name() const { return name; }
 private:
 	const TokPtr name;
