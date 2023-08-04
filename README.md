@@ -8,12 +8,12 @@ Thorough documentation will be posted soon...
 ## Example Code
 ```
 fun range(n) ::
-	return { x | x in uZ, x <= n };
+	return { x | x in pZ, x <= n };
 ;;
 
-var conj = uZ;
+var conj = pZ;
 for k in range(5) ::
-	conj = conj * { k*x | x in uZ };
+	conj = conj * { k*x | x in pZ };
 ;;
 print conj;
 ```

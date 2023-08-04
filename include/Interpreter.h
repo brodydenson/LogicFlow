@@ -7,7 +7,7 @@ class Interpreter {
 public:
   static const EnvPtr global_env;
   static const TokPtr z_tok;
-  static const TokPtr uz_tok;
+  static const TokPtr pz_tok;
   static const TokPtr nz_tok;
   static const TokPtr to_int_tok;
   static const TokPtr to_double_tok;

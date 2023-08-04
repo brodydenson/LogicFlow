@@ -35,13 +35,17 @@ struct Domain {
   virtual SetContainer to_finite(const size_t max_size=DEF_COMP) const = 0;
 };
 
-struct ZDomain : public Domain {
-  ZDomain(const long _start=LONG_MIN, const long _end=LONG_MAX)
-    : start(_start), end(_end) { }
+struct PosZDomain : public Domain {
+  PosZDomain() = default;
   SetContainer to_finite(const size_t max_size=DEF_COMP) const;
-
-  const long start;
-  const long end;
+};
+struct NegZDomain : public Domain {
+  NegZDomain() = default;
+  SetContainer to_finite(const size_t max_size=DEF_COMP) const;
+};
+struct ZDomain : public Domain {
+  ZDomain() = default;
+  SetContainer to_finite(const size_t max_size=DEF_COMP) const;
 };
 
 struct ArrDomain : public Domain {

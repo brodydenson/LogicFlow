@@ -10,9 +10,25 @@ using std::max;
 using std::make_shared;
 using std::set;
 
+SetContainer PosZDomain::to_finite(const size_t max_size) const {
+  SetContainer s;
+
+  for (long i = 1; s.size() < max_size; ++i)
+    s.insert(make_shared<IntObj>(i));
+  return s;
+}
+SetContainer NegZDomain::to_finite(const size_t max_size) const {
+  SetContainer s;
+
+  for (long i = -1; s.size() < max_size; --i)
+    s.insert(make_shared<IntObj>(i));
+  return s;
+}
 SetContainer ZDomain::to_finite(const size_t max_size) const {
   SetContainer s;
-  for (long i = start; s.size() < max_size && i < end; ++i) 
+
+  const long half_max_size = max_size/2;
+  for (long i = -half_max_size; s.size() < max_size; ++i)
     s.insert(make_shared<IntObj>(i));
   return s;
 }

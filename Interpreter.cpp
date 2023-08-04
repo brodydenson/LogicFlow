@@ -11,7 +11,7 @@ using std::make_shared;
 const EnvPtr Interpreter::global_env = std::make_shared<Env>(nullptr);
 
 const TokPtr Interpreter::z_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("Z"));
-const TokPtr Interpreter::uz_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("uZ"));
+const TokPtr Interpreter::pz_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("pZ"));
 const TokPtr Interpreter::nz_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("nZ"));
 
 const TokPtr Interpreter::to_int_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("int_1"));
@@ -25,10 +25,10 @@ const TokPtr Interpreter::to_set_tok = make_shared<Tok>(TokType::IDENTIFIER, mak
 void Interpreter::build_env() {
   // Pre defined sets
   const auto z_set = make_shared<ZDomain>();
-  const auto uz_set = make_shared<ZDomain>(1);
-  const auto nz_set = make_shared<ZDomain>(LONG_MIN, -1);
+  const auto pz_set = make_shared<PosZDomain>();
+  const auto nz_set = make_shared<NegZDomain>();
   global_env->define(z_tok, make_shared<SetObj>(z_set));
-  global_env->define(uz_tok, make_shared<SetObj>(uz_set));
+  global_env->define(pz_tok, make_shared<SetObj>(pz_set));
   global_env->define(nz_tok, make_shared<SetObj>(nz_set));
 
   // Type conversion callables

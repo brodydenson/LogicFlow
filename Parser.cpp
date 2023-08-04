@@ -72,6 +72,7 @@ StmtPtr Parser::func_declaration() {
 
 	consume(TokType::COLON_COLON, "Expect '::' before function body");
 	const StmtPtr body = block();
+  // Supports overloaded functions
   const auto arity = make_shared<StrObj>("_" + to_string(params.size()));
   const auto callee_arity = make_shared<Tok>(TokType::IDENTIFIER, name->lit_obj->add(arity), name->line);
 	return make_shared<FuncStmt>(callee_arity, params, body);
@@ -361,6 +362,7 @@ ExprPtr Parser::finish_call(const ExprPtr &callee) {
 	list<ExprPtr> args;
 
 	if (match({TokType::RIGHT_PAREN}))  {
+    // Supports overloaded functions
     const auto arity = make_shared<StrObj>("_0");
     const auto new_name = make_shared<Tok>(TokType::IDENTIFIER, callee_name->lit_obj->add(arity), 
                                            callee_name->line);
