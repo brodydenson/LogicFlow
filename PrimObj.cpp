@@ -27,7 +27,7 @@ double PrimObj::to_double() const {
 bool PrimObj::to_bool() const {
 	throw runtime_error("Type does not support conversion to bool");
 }
-vector<PrimObjPtr> PrimObj::to_arr(const size_t) const {
+vector<PrimObjPtr> PrimObj::to_arr(const size_t, const size_t) const {
 	throw runtime_error("Type does not support conversion to array");
 }
 DomainPtr PrimObj::to_set() const {
@@ -477,9 +477,18 @@ PrimObjPtr ToBool::call(const list<PrimObjPtr> &args) const {
 PrimObjPtr ToArr::call(const list<PrimObjPtr> &args) const {
   return make_shared<ArrObj>((*args.cbegin())->to_arr(DEF_COMP));
 }
-PrimObjPtr ToArrLimit::call(const list<PrimObjPtr> &args) const {
-  const size_t max_comp = (*next(args.cbegin()))->to_int();
-  return make_shared<ArrObj>((*args.cbegin())->to_arr(max_comp));
+PrimObjPtr ToArr2::call(const list<PrimObjPtr> &args) const {
+  auto it = args.cbegin();
+  const auto obj = *it++;
+  const size_t max_size = (*it++)->to_int();
+  return make_shared<ArrObj>(obj->to_arr(max_size));
+}
+PrimObjPtr ToArr3::call(const list<PrimObjPtr> &args) const {
+  auto it = args.cbegin();
+  const auto obj = *it++;
+  const size_t max_size = (*it++)->to_int();
+  const size_t max_comp = (*it++)->to_int();
+  return make_shared<ArrObj>(obj->to_arr(max_size, max_comp));
 }
 PrimObjPtr ToSet::call(const list<PrimObjPtr> &args) const {
   return make_shared<SetObj>((*args.cbegin())->to_set());
@@ -507,9 +516,9 @@ PrimObjPtr FuncObj::call(const list<PrimObjPtr> &args) const {
 }
 
 string SetObj::to_str() const {
-  constexpr unsigned text_limit = 10;
+  constexpr size_t text_limit = 10;
+  const auto finite_set = data->to_finite(text_limit + 1);
   string s = "{ ";
-  const auto finite_set = data->to_finite();
 
   size_t added = 0;
   for (auto it = finite_set.cbegin(); it != finite_set.cend(); ++it, ++added) {
@@ -526,8 +535,8 @@ string SetObj::to_str() const {
 }
 
 bool SetObj::to_bool() const { return data->to_finite(1).size() != 0; }
-vector<PrimObjPtr> SetObj::to_arr(const size_t max_comp) const {
-  const auto s = data->to_finite(max_comp);
+vector<PrimObjPtr> SetObj::to_arr(const size_t max_size, const size_t max_comp) const {
+  const auto s = data->to_finite(max_size, max_comp);
   return vector<PrimObjPtr>(s.cbegin(), s.cend());
 }
 DomainPtr SetObj::to_set() const { return data; }

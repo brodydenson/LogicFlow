@@ -6,6 +6,10 @@
 #include <memory>
 #include <vector>
 
+// Also used in MySet
+constexpr size_t DEF_SIZE = 0x100;
+constexpr size_t DEF_COMP = 0x1000;
+
 class Tok;
 
 struct MySet;
@@ -24,7 +28,8 @@ struct PrimObj {
   virtual int to_int() const;
   virtual double to_double() const;
 	virtual bool to_bool() const;
-  virtual std::vector<PrimObjPtr> to_arr(const size_t max_size=0) const;
+  virtual std::vector<PrimObjPtr> to_arr(const size_t max_size=DEF_SIZE, 
+                                         const size_t max_comp=DEF_COMP) const;
   virtual DomainPtr to_set() const;
 
   virtual PrimObjPtr len() const;
@@ -187,10 +192,15 @@ struct ToArr : public CallableObj {
   PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
 	unsigned arity() const { return 1; }
 };
-struct ToArrLimit : public CallableObj {
-	ToArrLimit() = default;
+struct ToArr2 : public CallableObj {
+	ToArr2() = default;
   PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
 	unsigned arity() const { return 2; }
+};
+struct ToArr3 : public CallableObj {
+	ToArr3() = default;
+  PrimObjPtr call(const std::list<PrimObjPtr> &args) const;
+	unsigned arity() const { return 3; }
 };
 struct ToSet : public CallableObj {
 	ToSet() = default;
@@ -220,7 +230,7 @@ struct SetObj : public PrimObj {
 	SetObj(const DomainPtr &_data) : data(_data) { } // nonexplicit
 	std::string to_str() const;
 	bool to_bool() const;
-  std::vector<PrimObjPtr> to_arr(const size_t) const;
+  std::vector<PrimObjPtr> to_arr(const size_t, const size_t) const;
   DomainPtr to_set() const;
 
 	PrimObjPtr add(const PrimObjPtr&) const;

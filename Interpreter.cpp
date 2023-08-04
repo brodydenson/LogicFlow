@@ -19,7 +19,8 @@ const TokPtr Interpreter::to_double_tok = make_shared<Tok>(TokType::IDENTIFIER, 
 const TokPtr Interpreter::to_str_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("str_1"));
 const TokPtr Interpreter::to_bool_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("bool_1"));
 const TokPtr Interpreter::to_arr_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("arr_1"));
-const TokPtr Interpreter::to_arr_limit_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("arr_2"));
+const TokPtr Interpreter::to_arr2_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("arr_2"));
+const TokPtr Interpreter::to_arr3_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("arr_3"));
 const TokPtr Interpreter::to_set_tok = make_shared<Tok>(TokType::IDENTIFIER, make_shared<StrObj>("set_1"));
 
 void Interpreter::build_env() {
@@ -37,7 +38,8 @@ void Interpreter::build_env() {
   global_env->define(to_str_tok, make_shared<ToStr>());
   global_env->define(to_bool_tok, make_shared<ToBool>());
   global_env->define(to_arr_tok, make_shared<ToArr>());
-  global_env->define(to_arr_limit_tok, make_shared<ToArrLimit>());
+  global_env->define(to_arr2_tok, make_shared<ToArr2>());
+  global_env->define(to_arr3_tok, make_shared<ToArr3>());
   global_env->define(to_set_tok, make_shared<ToSet>());
 }
 
