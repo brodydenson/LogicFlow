@@ -107,13 +107,15 @@ struct StrObj : public PrimObj {
 	bool to_bool() const { return data.length() != 0; }
 
 	PrimObjPtr bar() const;
-	PrimObjPtr add(const PrimObjPtr&) const;
+	PrimObjPtr push(const PrimObjPtr&) const;
+	PrimObjPtr pop(const PrimObjPtr&) const;
 	PrimObjPtr gt(const PrimObjPtr&) const;
 	PrimObjPtr gte(const PrimObjPtr&) const;
 	PrimObjPtr lt(const PrimObjPtr&) const;
 	PrimObjPtr lte(const PrimObjPtr&) const;
 	PrimObjPtr eq(const PrimObjPtr&) const;
 	PrimObjPtr neq(const PrimObjPtr&) const;
+	PrimObjPtr at(const PrimObjPtr&) const;
 
 	const std::string data;
 };

@@ -74,7 +74,7 @@ StmtPtr Parser::func_declaration() {
 	const StmtPtr body = block();
   // Supports overloaded functions
   const auto arity = make_shared<StrObj>("_" + to_string(params.size()));
-  const auto callee_arity = make_shared<Tok>(TokType::IDENTIFIER, name->lit_obj->add(arity), name->line);
+  const auto callee_arity = make_shared<Tok>(TokType::IDENTIFIER, name->lit_obj->push(arity), name->line);
 	return make_shared<FuncStmt>(callee_arity, params, body);
 }
 
@@ -375,7 +375,7 @@ ExprPtr Parser::finish_call(const ExprPtr &callee) {
 	if (match({TokType::RIGHT_PAREN}))  {
     // Supports overloaded functions
     const auto arity = make_shared<StrObj>("_0");
-    const auto new_name = make_shared<Tok>(TokType::IDENTIFIER, callee_name->lit_obj->add(arity), 
+    const auto new_name = make_shared<Tok>(TokType::IDENTIFIER, callee_name->lit_obj->push(arity), 
                                            callee_name->line);
     const auto callee_arity = make_shared<Var>(new_name);
 	  return make_shared<Call>(callee_arity, *prev(cur_tok));
@@ -387,7 +387,7 @@ ExprPtr Parser::finish_call(const ExprPtr &callee) {
 
   // Supports overloaded functions
   const auto arity = make_shared<StrObj>("_" + to_string(args.size()));
-  const auto new_name = make_shared<Tok>(TokType::IDENTIFIER, callee_name->lit_obj->add(arity), 
+  const auto new_name = make_shared<Tok>(TokType::IDENTIFIER, callee_name->lit_obj->push(arity), 
                                          callee_name->line);
   const auto callee_arity = make_shared<Var>(new_name);
 	return make_shared<Call>(callee_arity, paren, args);

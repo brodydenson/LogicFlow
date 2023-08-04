@@ -9,6 +9,7 @@
 #include "include/Interpreter.h"
 #include "include/MySet.h"
 
+using std::to_string;
 using std::make_shared;
 using std::runtime_error;
 using std::list;
@@ -199,8 +200,18 @@ PrimObjPtr DoubleObj::neq(const PrimObjPtr &rhs) const {
 PrimObjPtr StrObj::bar() const {
 	return make_shared<IntObj>(data.size());
 }
-PrimObjPtr StrObj::add(const PrimObjPtr &rhs) const { 
+PrimObjPtr StrObj::push(const PrimObjPtr &rhs) const { 
 	return make_shared<StrObj>(data + rhs->to_str());
+}
+PrimObjPtr StrObj::pop(const PrimObjPtr &rhs) const { 
+  const size_t index = rhs->to_int();
+  if (index < 1 || index > bar()->to_int())
+    throw runtime_error("Cannot remove an element out of range");
+
+  string new_str = data;
+  new_str.erase(new_str.cbegin() + index - 1);
+
+  return make_shared<StrObj>(new_str);
 }
 PrimObjPtr StrObj::gt(const PrimObjPtr &rhs) const { 
 	return make_shared<BoolObj>(data > rhs->to_str());
@@ -219,6 +230,14 @@ PrimObjPtr StrObj::eq(const PrimObjPtr &rhs) const {
 }
 PrimObjPtr StrObj::neq(const PrimObjPtr &rhs) const { 
 	return make_shared<BoolObj>(data != rhs->to_str());
+}
+PrimObjPtr StrObj::at(const PrimObjPtr &rhs) const { 
+  const size_t i = rhs->to_int();
+  try {
+    return make_shared<StrObj>(string(1, data.at(i-1)));
+  } catch (const std::out_of_range &e) {
+    throw runtime_error("Index out of range");
+  }
 }
 
 PrimObjPtr BoolObj::negate() const { 
@@ -477,7 +496,7 @@ PrimObjPtr ArrObj::neq(const PrimObjPtr &rhs) const {
 	return make_shared<BoolObj>(true);
 }
 PrimObjPtr ArrObj::at(const PrimObjPtr &rhs) const {
-  const size_t i = rhs->to_double();
+  const size_t i = rhs->to_int();
   try {
     return data.at(i-1);
   } catch (const std::out_of_range &e) {
