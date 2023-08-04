@@ -45,7 +45,6 @@ map<string, TokType> str_to_tok = {
 	{"^", CARROT},
 	{"|", PIPE},
 	{"_", UNDERSCORE},
-	{"#", HASHTAG},
 
 	// One or multiple character tokens.
 	{"!", BANG},
@@ -95,7 +94,6 @@ map<TokType, string> tok_to_str = {
 	{CARROT, "^"},
 	{PIPE, "|"},
 	{UNDERSCORE, "_"},
-	{HASHTAG, "#"},
 
 	// One or multiple character tokens.
 	{BANG, "!"},
