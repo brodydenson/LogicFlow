@@ -7,6 +7,7 @@ Thorough documentation will be posted soon...
 
 ## Example Code
 ```
+# Returns [1, 2, 3, ... n]
 fn range(n) ::
 	return { x | x in pZ, x <= n };
 ;;

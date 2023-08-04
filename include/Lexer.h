@@ -30,6 +30,7 @@ private:
 	std::string content;
 
 	inline bool match(const char);
+	inline void adv();
 	TokPtr next_tok();
 	void tokenize();
 

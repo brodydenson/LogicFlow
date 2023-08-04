@@ -37,7 +37,13 @@ SetContainer ArrDomain::to_finite(const size_t max_size, const size_t max_comp) 
 SetContainer MySet::to_finite(const size_t max_size, const size_t max_comp) const {
   SetContainer s;
   size_t computed = 0;
-  const auto finite_domain = domain->to_finite(max_size, max_comp);
+
+  SetContainer finite_domain;
+  if (!cond_func)
+    finite_domain = domain->to_finite(max_size, max_comp);
+  else // No optimization
+    finite_domain = domain->to_finite(max_comp, max_comp);
+
   for (auto d_it = finite_domain.cbegin(); d_it != finite_domain.cend() 
   && s.size() < max_size && computed < max_comp; ++d_it) {
 

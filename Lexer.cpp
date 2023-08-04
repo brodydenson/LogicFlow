@@ -49,18 +49,25 @@ Lexer &Lexer::operator=(const string &_content) {
 
 bool Lexer::match(const char ch) {
 	if (cur_it != content.cend() && *cur_it == ch) 
-		{ ++cur_it; return true; }
+		{ adv(); return true; }
 	return false;
+}
+
+void Lexer::adv() {
+  if (*cur_it == '\n')
+    ++cur_line;
+  ++cur_it;
 }
 
 TokPtr Lexer::next_tok() {
 	// Forgets whitespaces
-	while (cur_it != content.cend() && isspace(static_cast<unsigned char>(*cur_it))) {
-    if (*cur_it == '\n') 
-      ++cur_line;
-    ++cur_it;
-  }
+	while (cur_it != content.cend() && isspace(static_cast<unsigned char>(*cur_it))) adv();
   if (cur_it == content.cend()) return nullptr;
+  // Comments
+  if (*cur_it == '#') {
+    while (cur_it != content.cend() && *cur_it != '\n') adv();
+    return next_tok();
+  }
 
 	const auto beg = cur_it;
 	const auto op_end = check_op();
