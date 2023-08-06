@@ -245,6 +245,7 @@ struct SetObj : public PrimObj {
 	PrimObjPtr add(const PrimObjPtr&) const;
 	PrimObjPtr sub(const PrimObjPtr&) const;
 	PrimObjPtr mul(const PrimObjPtr&) const;
+	// PrimObjPtr pow(const PrimObjPtr&) const;
 
 	const DomainPtr data;
 };

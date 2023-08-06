@@ -67,19 +67,42 @@ struct MySet : public Domain {
   const std::shared_ptr<FuncObj> cond_func;
 };
 
-struct SetOp : public Domain {
-  SetOp(const DomainPtr &_lhs, const DomainPtr &_rhs, const SetOpType _op_type)
-    : lhs(_lhs), rhs(_rhs), op_type(_op_type) { }
-
-  SetContainer finite_union(const size_t, const size_t) const;
-  SetContainer finite_intersection(const size_t, const size_t) const;
-  SetContainer finite_difference(const size_t, const size_t) const;
-  SetContainer to_finite(const size_t, const size_t) const;
-
+struct SetUnion : public Domain {
   const DomainPtr lhs;
   const DomainPtr rhs;
-  const SetOpType op_type;
+
+  SetUnion(const DomainPtr &_lhs, const DomainPtr &_rhs)
+    : lhs(_lhs), rhs(_rhs) { }
+
+  SetContainer to_finite(const size_t, const size_t) const;
 };
+struct SetInter : public Domain {
+  const DomainPtr lhs;
+  const DomainPtr rhs;
+
+  SetInter(const DomainPtr &_lhs, const DomainPtr &_rhs)
+    : lhs(_lhs), rhs(_rhs) { }
+
+  SetContainer to_finite(const size_t, const size_t) const;
+};
+struct SetDiff : public Domain {
+  const DomainPtr lhs;
+  const DomainPtr rhs;
+
+  SetDiff(const DomainPtr &_lhs, const DomainPtr &_rhs)
+    : lhs(_lhs), rhs(_rhs) { }
+
+  SetContainer to_finite(const size_t, const size_t) const;
+};
+//
+//   const DomainPtr base;
+//   const unsigned exp;
+
+//   SetPow(const DomainPtr &_base, const unsigned _exp)
+//     : base(_base), exp(_exp) { }
+
+//   SetContainer to_finite(const size_t, const size_t) const;
+// };
 
 
 typedef std::shared_ptr<MySet> SetPtr;

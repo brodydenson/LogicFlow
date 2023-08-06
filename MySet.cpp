@@ -55,7 +55,7 @@ SetContainer MySet::to_finite(const size_t max_size, const size_t max_comp) cons
   return s;
 }
 
-SetContainer SetOp::finite_union(const size_t max_size, const size_t max_comp) const {
+SetContainer SetUnion::to_finite(const size_t max_size, const size_t max_comp) const {
   SetContainer s;
   size_t computed = 0;
   const auto finite_lhs = lhs->to_finite(max_size, max_comp);
@@ -76,7 +76,7 @@ SetContainer SetOp::finite_union(const size_t max_size, const size_t max_comp) c
   return s;
 }
 
-SetContainer SetOp::finite_intersection(const size_t max_size, const size_t max_comp) const {
+SetContainer SetInter::to_finite(const size_t max_size, const size_t max_comp) const {
   SetContainer s;
   size_t computed = 0;
   // Finding intersections can't optimized like the others qwq
@@ -94,7 +94,7 @@ SetContainer SetOp::finite_intersection(const size_t max_size, const size_t max_
   return s;
 }
 
-SetContainer SetOp::finite_difference(const size_t max_size, const size_t max_comp) const {
+SetContainer SetDiff::to_finite(const size_t max_size, const size_t max_comp) const {
   SetContainer s;
   size_t computed = 0;
   // Finding intersections can't optimized like the others qwq
@@ -111,15 +111,3 @@ SetContainer SetOp::finite_difference(const size_t max_size, const size_t max_co
 
   return s;
 }
-
-SetContainer SetOp::to_finite(const size_t max_size, const size_t max_comp) const {
-  if (op_type == SetOpType::UNION)
-    return finite_union(max_size, max_comp);
-  if (op_type == SetOpType::INTERSECTION)
-    return finite_intersection(max_size, max_comp);
-  if (op_type == SetOpType::DIFFERENCE)
-    return finite_difference(max_size, max_comp);
-  throw std::logic_error("No matching set operation");
-}
-
-

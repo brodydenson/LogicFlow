@@ -338,8 +338,18 @@ ExprPtr Parser::array() {
 
 ExprPtr Parser::set() {
   if (match({TokType::LEFT_BRACE})) {
+    // Empty set
+    if (match({TokType::RIGHT_BRACE}))
+      return make_shared<Set>(nullptr, nullptr, make_shared<Arr>(vector<ExprPtr>{}), nullptr);
+
     const ExprPtr ret = expression();
-    consume(TokType::PIPE, "Expect '|' before variable declaration");
+    if (!match({TokType::PIPE})) {
+      const auto brace = consume(TokType::RIGHT_BRACE, "Expect '}' after expression");
+      const auto arr = make_shared<Arr>(vector<ExprPtr>{ret});
+      return make_shared<Call>(
+        make_shared<Var>(Interpreter::to_set_tok), brace, list<ExprPtr>{arr});
+    }
+    // consume(TokType::PIPE, "Expect '|' before variable declaration");
     // For ranges and non ranges
     const TokPtr var_name = consume(TokType::IDENTIFIER, 
                                     "Expect identifier before domain");

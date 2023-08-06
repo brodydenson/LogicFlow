@@ -2,7 +2,7 @@
 An interpreted language designed for **discrete math** purposes.
 
 ## Status
-Currently in **very early** stages of development. 
+Currently in **early** stages of development. 
 Thorough documentation will be posted soon...
 
 ## Example Code
@@ -17,4 +17,20 @@ for k in range(5) ::
 	conj = conj * { k*x | x in pZ };
 ;;
 print conj;
+```
+
+```
+# Returns every subset of the set
+fn P(set) ::
+  let subsets = {[]};
+  for item in set ::
+    for subset in subsets ::
+      subsets = subsets + {subset ++ item};
+    ;;
+    subsets = subsets + {[item]};
+  ;;
+  return subsets;
+;;
+
+print P([1, 2, 3]);
 ```

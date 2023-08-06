@@ -588,14 +588,20 @@ PrimObjPtr SetObj::bar() const {
 }
 
 PrimObjPtr SetObj::add(const PrimObjPtr &rhs) const { 
-  const auto set_op = make_shared<SetOp>(data, rhs->to_set(), UNION);
+  const auto set_op = make_shared<SetUnion>(data, rhs->to_set());
   return make_shared<SetObj>(set_op);
 }
 PrimObjPtr SetObj::mul(const PrimObjPtr &rhs) const { 
-  const auto set_op = make_shared<SetOp>(data, rhs->to_set(), INTERSECTION);
+  const auto set_op = make_shared<SetInter>(data, rhs->to_set());
   return make_shared<SetObj>(set_op);
 }
 PrimObjPtr SetObj::sub(const PrimObjPtr &rhs) const { 
-  const auto set_op = make_shared<SetOp>(data, rhs->to_set(), DIFFERENCE);
+  const auto set_op = make_shared<SetDiff>(data, rhs->to_set());
   return make_shared<SetObj>(set_op);
 }
+// PrimObjPtr SetObj::pow(const PrimObjPtr &rhs) const { 
+//   const unsigned exp = rhs->to_int();
+//   if (exp < 0) throw runtime_error("Set must be raised to a positive power");
+//   const auto set_op = make_shared<SetPow>(data, exp);
+//   return make_shared<SetObj>(set_op);
+// }
