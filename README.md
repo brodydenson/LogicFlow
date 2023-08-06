@@ -14,7 +14,7 @@ fn range(n) ::
 
 let conj = pZ;
 for k in range(5) ::
-	conj = conj * { k*x | x in pZ };
+	conj *= { k*x | x in pZ };
 ;;
 print conj;
 ```
@@ -24,13 +24,10 @@ print conj;
 fn P(set) ::
   let subsets = {[]};
   for item in set ::
-    for subset in subsets ::
-      subsets = subsets + {subset ++ item};
-    ;;
-    subsets = subsets + {[item]};
+    for subset in subsets
+      subsets += {subset ++ item};
+    subsets += {[item]};
   ;;
   return subsets;
 ;;
-
-print P([1, 2, 3]);
 ```

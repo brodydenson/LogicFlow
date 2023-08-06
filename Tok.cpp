@@ -59,6 +59,13 @@ map<string, TokType> str_to_tok = {
   {";;", SEMICOLON_SEMICOLON},
   {"++", PLUS_PLUS},
   {"--", MINUS_MINUS},
+	{"-=", MINUS_EQUAL},
+	{"+=", PLUS_EQUAL},
+	{"/=", SLASH_EQUAL},
+	{"*=", STAR_EQUAL},
+	{"^=", CARROT_EQUAL},
+  {"++=", PLUS_PLUS_EQUAL},
+  {"--=", MINUS_MINUS_EQUAL},
 
 	// Keywords.
 	{"and", AND},
@@ -108,6 +115,13 @@ map<TokType, string> tok_to_str = {
   {SEMICOLON_SEMICOLON, ";;"},
   {PLUS_PLUS, "++"},
   {MINUS_MINUS, "--"},
+	{MINUS_EQUAL, "-="},
+	{PLUS_EQUAL, "+="},
+	{SLASH_EQUAL, "/="},
+	{STAR_EQUAL, "*="},
+	{CARROT_EQUAL, "^="},
+  {PLUS_PLUS_EQUAL, "++="},
+  {MINUS_MINUS_EQUAL, "--="},
 
 	// Keywords.
 	{AND, "and"},

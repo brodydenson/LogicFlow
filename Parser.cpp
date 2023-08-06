@@ -207,11 +207,33 @@ ExprPtr Parser::expression() {
 ExprPtr Parser::assignment() {
 	ExprPtr expr = logic_or();
 
-	if (match({TokType::EQUAL})) {
+
+	if (match({TokType::EQUAL, TokType::MINUS_EQUAL, TokType::PLUS_EQUAL, 
+    TokType::SLASH_EQUAL, TokType::STAR_EQUAL, TokType::CARROT_EQUAL, 
+    TokType::PLUS_PLUS_EQUAL, TokType::MINUS_MINUS_EQUAL})) {
+    const auto op = *prev(cur_tok);
+
 		shared_ptr<Var> var = dynamic_pointer_cast<Var>(expr);
 		if (var == nullptr) throw ProgError("Invalid assignment target", *cur_tok);
-		const ExprPtr val = logic_or();
-		expr = make_shared<Asgn>(var->get_name(), val);
+		ExprPtr val = logic_or();
+    switch (op->type)  {
+      case TokType::MINUS_EQUAL:
+      val = make_shared<BinOp>(var, val, make_shared<Tok>(TokType::MINUS)); break;
+      case TokType::PLUS_EQUAL:
+      val = make_shared<BinOp>(var, val, make_shared<Tok>(TokType::PLUS)); break;
+      case TokType::SLASH_EQUAL:
+      val = make_shared<BinOp>(var, val, make_shared<Tok>(TokType::SLASH)); break;
+      case TokType::STAR_EQUAL:
+      val = make_shared<BinOp>(var, val, make_shared<Tok>(TokType::STAR)); break;
+      case TokType::CARROT_EQUAL:
+      val = make_shared<BinOp>(var, val, make_shared<Tok>(TokType::CARROT)); break;
+      case TokType::MINUS_MINUS_EQUAL:
+      val = make_shared<BinOp>(var, val, make_shared<Tok>(TokType::MINUS_MINUS)); break;
+      case TokType::PLUS_PLUS_EQUAL:
+      val = make_shared<BinOp>(var, val, make_shared<Tok>(TokType::PLUS_PLUS)); break;
+      default: break;
+    }
+    expr = make_shared<Asgn>(var->get_name(), val); 
 	}
 
 	return expr;
