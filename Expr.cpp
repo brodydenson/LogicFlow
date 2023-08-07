@@ -44,6 +44,8 @@ PrimObjPtr BinOp::eval(const EnvPtr &env) const {
 		return lhs->eval(env)->push(rhs->eval(env));
 		case TokType::MINUS_MINUS:
 		return lhs->eval(env)->pop(rhs->eval(env));
+		case TokType::IN:
+		return rhs->eval(env)->in(lhs->eval(env));
 		default:
 		throw ProgError("Invalid binary operator '" + op->to_str() + "'", op);
 	} // switch op type

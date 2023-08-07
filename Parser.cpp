@@ -281,7 +281,7 @@ ExprPtr Parser::comparison() {
 	while (match({TokType::GREATER, TokType::GREATER_EQUAL,
 				  TokType::LESS, TokType::LESS_EQUAL})) {
 		const TokPtr op = *prev(cur_tok);
-		const ExprPtr rhs = term();
+		const ExprPtr rhs = array_op();
 		expr = make_shared<BinOp>(expr, rhs, op);
 	}
 
@@ -291,10 +291,10 @@ ExprPtr Parser::comparison() {
 ExprPtr Parser::array_op() {
 	ExprPtr expr = term();
 
-	while (match({TokType::MINUS_MINUS, TokType::PLUS_PLUS})) {
+	while (match({TokType::IN, TokType::MINUS_MINUS, TokType::PLUS_PLUS})) {
 		const TokPtr op = *prev(cur_tok);
-		const ExprPtr rhs = factor();
-		expr = make_shared<BinOp>(expr, rhs, op);
+		const ExprPtr rhs = term();
+    expr = make_shared<BinOp>(expr, rhs, op);
 	}
 
 	return expr;

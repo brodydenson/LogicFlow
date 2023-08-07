@@ -7,8 +7,8 @@
 #include <vector>
 
 // Also used in MySet
-constexpr size_t DEF_SIZE = 0x100;
-constexpr size_t DEF_COMP = 0x1000;
+constexpr size_t DEF_SIZE = 0x1000;
+constexpr size_t DEF_COMP = 0x10000;
 
 class Tok;
 
@@ -51,6 +51,7 @@ struct PrimObj {
 	virtual PrimObjPtr conj(const PrimObjPtr&) const;
 	virtual PrimObjPtr disj(const PrimObjPtr&) const;
 	virtual PrimObjPtr at(const PrimObjPtr&) const;
+	virtual PrimObjPtr in(const PrimObjPtr&) const;
 };
 
 struct IntObj : public PrimObj {
@@ -116,6 +117,7 @@ struct StrObj : public PrimObj {
 	PrimObjPtr eq(const PrimObjPtr&) const;
 	PrimObjPtr neq(const PrimObjPtr&) const;
 	PrimObjPtr at(const PrimObjPtr&) const;
+	PrimObjPtr in(const PrimObjPtr&) const;
 
 	const std::string data;
 };
@@ -161,6 +163,7 @@ struct ArrObj : public PrimObj {
 	PrimObjPtr eq(const PrimObjPtr&) const;
 	PrimObjPtr neq(const PrimObjPtr&) const;
 	PrimObjPtr at(const PrimObjPtr&) const;
+	PrimObjPtr in(const PrimObjPtr&) const;
 
 	const std::vector<PrimObjPtr> data;
 };
@@ -245,6 +248,7 @@ struct SetObj : public PrimObj {
 	PrimObjPtr add(const PrimObjPtr&) const;
 	PrimObjPtr sub(const PrimObjPtr&) const;
 	PrimObjPtr mul(const PrimObjPtr&) const;
+	PrimObjPtr in(const PrimObjPtr&) const;
 	// PrimObjPtr pow(const PrimObjPtr&) const;
 
 	const DomainPtr data;

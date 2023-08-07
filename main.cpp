@@ -13,6 +13,22 @@ using std::string;
 using std::ifstream;
 using std::ostringstream;
 
+string read_file(const string &path) {
+  ifstream file(path);
+  ostringstream buffer;
+  buffer << file.rdbuf();
+  file.close();
+  return buffer.str();
+}
+
+void interpret_file(const string &path) {
+  const string content = read_file(path);
+
+  Parser parser(content);
+  Interpreter::set_parser(parser);
+  Interpreter::interpret();
+}
+
 int main() {
  //  string line;
 	// while (cout << ">> " && getline(cin, line) && line != "exit") {
@@ -21,17 +37,11 @@ int main() {
  //    Interpreter::interpret();
 	// }
 
-  ifstream file("source.txt");
-  ostringstream buffer;
-  buffer << file.rdbuf();
-  const string s = buffer.str();
-  file.close();
-
   Interpreter::build_env();
+  interpret_file("std.lf");
+  interpret_file("main.lf");
 
-  Parser parser(s);
-  Interpreter::set_parser(parser);
-  Interpreter::interpret();
+
 
 	return 0;
 }

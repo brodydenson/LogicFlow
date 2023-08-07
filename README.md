@@ -13,9 +13,8 @@ fn range(n) ::
 ;;
 
 let conj = pZ;
-for k in range(5) ::
-	conj *= { k*x | x in pZ };
-;;
+for k in range(5)
+  conj *= { k*x | x in pZ };
 print conj;
 ```
 

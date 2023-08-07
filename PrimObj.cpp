@@ -3,6 +3,7 @@
 #include <list>
 #include <string>
 #include <cmath>
+#include <algorithm>
 #include "include/Exception.h"
 #include "include/PrimObj.h"
 #include "include/Stmt.h"
@@ -91,6 +92,9 @@ PrimObjPtr PrimObj::disj(const PrimObjPtr &rhs) const {
 }
 PrimObjPtr PrimObj::at(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '_' operator");
+}
+PrimObjPtr PrimObj::in(const PrimObjPtr &rhs) const { 
+	throw runtime_error("Type does not support 'in' operator");
 }
 
 PrimObjPtr IntObj::bar() const {
@@ -238,6 +242,9 @@ PrimObjPtr StrObj::at(const PrimObjPtr &rhs) const {
   } catch (const std::out_of_range &e) {
     throw runtime_error("Index out of range");
   }
+}
+PrimObjPtr StrObj::in(const PrimObjPtr &rhs) const { 
+	return make_shared<BoolObj>(data.find(rhs->to_str()) != string::npos);
 }
 
 PrimObjPtr BoolObj::negate() const { 
@@ -503,6 +510,11 @@ PrimObjPtr ArrObj::at(const PrimObjPtr &rhs) const {
     throw runtime_error("Index out of range");
   }
 }
+PrimObjPtr ArrObj::in(const PrimObjPtr &rhs) const {
+  const auto it = std::find_if(data.cbegin(), data.cend(), 
+                               [rhs](const PrimObjPtr &obj) { return obj->eq(rhs); });
+  return make_shared<BoolObj>(it != data.cend());
+}
 
 PrimObjPtr ToInt::call(const list<PrimObjPtr> &args) const {
   return make_shared<IntObj>((*args.cbegin())->to_int());
@@ -598,6 +610,10 @@ PrimObjPtr SetObj::mul(const PrimObjPtr &rhs) const {
 PrimObjPtr SetObj::sub(const PrimObjPtr &rhs) const { 
   const auto set_op = make_shared<SetDiff>(data, rhs->to_set());
   return make_shared<SetObj>(set_op);
+}
+PrimObjPtr SetObj::in(const PrimObjPtr &rhs) const { 
+  const auto s = data->to_finite(DEF_SIZE, DEF_COMP);
+  return make_shared<BoolObj>(s.find(rhs) != s.cend());
 }
 // PrimObjPtr SetObj::pow(const PrimObjPtr &rhs) const { 
 //   const unsigned exp = rhs->to_int();

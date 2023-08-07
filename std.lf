@@ -1,0 +1,101 @@
+fn range(n) ::
+	return arr({ x | x in pZ }, n);
+;;
+
+fn range(b, e) ::
+	return arr({ x | x in pZ }, e-b+1) + b-1;
+;;
+
+fn floor(n) ::
+	return int(n);
+;;
+
+fn ceil(n) ::
+	if n - floor(n) > 0
+		return floor(n)+1;
+	else
+		return floor(n);
+;;
+
+fn max(a, b) ::
+	if a > b return a;
+	return b;
+;;
+
+fn min(a, b) ::
+	if a < b return a;
+	return b;
+;;
+
+fn max(arr) ::
+	let largest = arr_1;
+	for i in arr
+		largest = max(largest, i);
+	return largest;
+;;
+
+fn min(arr) ::
+	let smallest = arr_1;
+	for i in arr
+		smallest = min(smallest, i);
+	return smallest;
+;;
+
+# String to number
+fn stn(str) ::
+  # Char to number
+  fn ctn(ch) ::
+    if ch == "0" return 0;
+    if ch == "1" return 1;
+    if ch == "2" return 2;
+    if ch == "3" return 3;
+    if ch == "4" return 4;
+    if ch == "5" return 5;
+    if ch == "6" return 6;
+    if ch == "7" return 7;
+    if ch == "8" return 8;
+    if ch == "9" return 9;
+  ;;
+
+	let dec;
+	let mul = 1;
+	while str ::
+		dec += mul * ctn(str_|str|);
+		str --= |str|;
+		mul *= 10;
+	;;
+	return dec;
+;;
+
+# Returns every subset of the set
+fn powSet(set) ::
+  let subsets = {[]};
+  for item in set ::
+    for subset in subsets
+      subsets += {subset ++ item};
+    subsets += {[item]};
+  ;;
+  return subsets;
+;;
+
+# Returns every subset of the set with a given length
+fn powSet(set, n) ::
+  let ps = powSet(set);
+  let filter = {[]};
+  for subset in ps
+    if |subset| == n
+      filter += [subset];
+  return filter;
+;;
+
+fn factorial(n) ::
+  let total = 1;
+  for i in range(n)
+    total *= i;
+  return total;
+;;
+
+fn find(arr, k) ::
+  for i in arr
+    if i == k return IDX;
+;;
