@@ -168,7 +168,12 @@ StmtPtr Parser::if_statement() {
 }
 
 StmtPtr Parser::print_statement() {
-	const ExprPtr val = expression();
+  const TokPtr print = *prev(cur_tok);
+	ExprPtr val = make_shared<Call>(
+    make_shared<Var>(Interpreter::to_str_tok), print, list<ExprPtr>{expression()});
+
+  while (match({TokType::COMMA}))
+    val = make_shared<BinOp>(val, expression(), make_shared<Tok>(TokType::PLUS_PLUS));
 	consume(TokType::SEMICOLON, "Expect ';' after value");
 	return make_shared<PrintStmt>(val);
 }
@@ -335,15 +340,27 @@ ExprPtr Parser::unary() {
 }
 
 ExprPtr Parser::exponent() {
-	ExprPtr expr = array();
+	ExprPtr expr = index();
 
 	while (match({TokType::CARROT})) {
 		const TokPtr op = *prev(cur_tok);
-		const ExprPtr rhs = array();
+		const ExprPtr rhs = index();
 		expr = make_shared<BinOp>(expr, rhs, op);
 	}
 
 	return expr;
+}
+
+ExprPtr Parser::index() {
+  const ExprPtr expr = array();
+
+  if (match({TokType::UNDERSCORE})) {
+    const TokPtr op = *prev(cur_tok);
+    const ExprPtr index = array();
+    return make_shared<BinOp>(expr, index, op);
+  }
+
+  return expr;
 }
 
 ExprPtr Parser::array() {
@@ -390,7 +407,7 @@ ExprPtr Parser::set() {
 }
 
 ExprPtr Parser::call() {
-	ExprPtr expr = index();
+	ExprPtr expr = primary();
 
 	while (match({TokType::LEFT_PAREN}))
 		expr = finish_call(expr);
@@ -425,17 +442,6 @@ ExprPtr Parser::finish_call(const ExprPtr &callee) {
 	return make_shared<Call>(callee_arity, paren, args);
 }
 
-ExprPtr Parser::index() {
-  const ExprPtr expr = primary();
-
-  if (match({TokType::UNDERSCORE})) {
-    const TokPtr op = *prev(cur_tok);
-    const ExprPtr index = primary();
-    return make_shared<BinOp>(expr, index, op);
-  }
-
-  return expr;
-}
 
 ExprPtr Parser::primary() {
 	if (match({TokType::FALSE})) 

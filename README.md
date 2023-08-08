@@ -9,12 +9,12 @@ Thorough documentation will be posted soon...
 ```
 # Returns [1, 2, 3, ... n]
 fn range(n) ::
-	return { x | x in pZ, x <= n };
+    return { x | x in pZ, x <= n };
 ;;
 
 let conj = pZ;
 for k in range(5)
-  conj *= { k*x | x in pZ };
+    conj *= { k*x | x in pZ };
 print conj;
 ```
 

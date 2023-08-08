@@ -1,44 +1,44 @@
 fn range(n) ::
-	return arr({ x | x in pZ }, n);
+  return set(arr({ x | x in pZ }, n));
 ;;
 
 fn range(b, e) ::
-	return arr({ x | x in pZ }, e-b+1) + b-1;
+  return set(arr({ x | x in pZ }, e-b+1) + b-1);
 ;;
 
 fn floor(n) ::
-	return int(n);
+  return int(n);
 ;;
 
 fn ceil(n) ::
-	if n - floor(n) > 0
-		return floor(n)+1;
-	else
-		return floor(n);
+  if n - floor(n) > 0
+    return floor(n)+1;
+  else
+    return floor(n);
 ;;
 
 fn max(a, b) ::
-	if a > b return a;
-	return b;
+  if a > b return a;
+  return b;
 ;;
 
 fn min(a, b) ::
-	if a < b return a;
-	return b;
+  if a < b return a;
+  return b;
 ;;
 
 fn max(arr) ::
-	let largest = arr_1;
-	for i in arr
-		largest = max(largest, i);
-	return largest;
+  let largest = arr_1;
+  for i in arr
+    largest = max(largest, i);
+  return largest;
 ;;
 
 fn min(arr) ::
-	let smallest = arr_1;
-	for i in arr
-		smallest = min(smallest, i);
-	return smallest;
+  let smallest = arr_1;
+  for i in arr
+    smallest = min(smallest, i);
+  return smallest;
 ;;
 
 # String to number
@@ -57,14 +57,14 @@ fn stn(str) ::
     if ch == "9" return 9;
   ;;
 
-	let dec;
-	let mul = 1;
-	while str ::
-		dec += mul * ctn(str_|str|);
-		str --= |str|;
-		mul *= 10;
-	;;
-	return dec;
+  let dec;
+  let mul = 1;
+  while str ::
+    dec += mul * ctn(str_|str|);
+    str --= |str|;
+    mul *= 10;
+  ;;
+  return dec;
 ;;
 
 # Returns every subset of the set
@@ -99,3 +99,4 @@ fn find(arr, k) ::
   for i in arr
     if i == k return IDX;
 ;;
+

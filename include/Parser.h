@@ -53,12 +53,12 @@ private:
   ExprPtr array_op();
 	ExprPtr term();
 	ExprPtr factor();
-	ExprPtr exponent();
 	ExprPtr unary();
+	ExprPtr exponent();
+  ExprPtr index();
 	ExprPtr array();
 	ExprPtr set();
 	ExprPtr call();
-  ExprPtr index();
 	ExprPtr primary();
 };
 
