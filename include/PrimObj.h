@@ -41,6 +41,7 @@ struct PrimObj {
 	virtual PrimObjPtr sub(const PrimObjPtr&) const;
 	virtual PrimObjPtr mul(const PrimObjPtr&) const;
 	virtual PrimObjPtr div(const PrimObjPtr&) const;
+	virtual PrimObjPtr mod(const PrimObjPtr&) const;
 	virtual PrimObjPtr pow(const PrimObjPtr&) const;
 	virtual PrimObjPtr gt(const PrimObjPtr&) const;
 	virtual PrimObjPtr gte(const PrimObjPtr&) const;
@@ -67,6 +68,7 @@ struct IntObj : public PrimObj {
 	PrimObjPtr sub(const PrimObjPtr&) const;
 	PrimObjPtr mul(const PrimObjPtr&) const;
 	PrimObjPtr div(const PrimObjPtr&) const;
+	PrimObjPtr mod(const PrimObjPtr&) const;
 	PrimObjPtr pow(const PrimObjPtr&) const;
 	PrimObjPtr gt(const PrimObjPtr&) const;
 	PrimObjPtr gte(const PrimObjPtr&) const;
@@ -156,6 +158,7 @@ struct ArrObj : public PrimObj {
 	PrimObjPtr sub(const PrimObjPtr&) const;
 	PrimObjPtr mul(const PrimObjPtr&) const;
 	PrimObjPtr div(const PrimObjPtr&) const;
+	PrimObjPtr mod(const PrimObjPtr&) const;
 	PrimObjPtr gt(const PrimObjPtr&) const;
 	PrimObjPtr gte(const PrimObjPtr&) const;
 	PrimObjPtr lt(const PrimObjPtr&) const;

@@ -21,12 +21,12 @@ print conj;
 ```
 # Returns every subset of the set
 fn P(set) ::
-  let subsets = {[]};
-  for item in set ::
-    for subset in subsets
-      subsets += {subset ++ item};
-    subsets += {[item]};
-  ;;
-  return subsets;
+    let subsets = {[]};
+    for item in set ::
+        for subset in subsets
+            subsets += {subset ++ item};
+        subsets += {[item]};
+    ;;
+    return subsets;
 ;;
 ```

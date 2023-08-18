@@ -320,7 +320,7 @@ ExprPtr Parser::term() {
 ExprPtr Parser::factor() {
 	ExprPtr expr = unary();
 
-	while (match({TokType::STAR, TokType::SLASH})) {
+	while (match({TokType::STAR, TokType::SLASH, TokType::PERCENT})) {
 		const TokPtr op = *prev(cur_tok);
 		const ExprPtr rhs = unary();
 		expr = make_shared<BinOp>(expr, rhs, op);

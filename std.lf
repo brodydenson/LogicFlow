@@ -1,8 +1,10 @@
 fn range(n) ::
+  # Convert back to set so it can use quicker search
   return set(arr({ x | x in pZ }, n));
 ;;
 
 fn range(b, e) ::
+  # Convert back to set so it can use quicker search
   return set(arr({ x | x in pZ }, e-b+1) + b-1);
 ;;
 
@@ -100,3 +102,14 @@ fn find(arr, k) ::
     if i == k return IDX;
 ;;
 
+fn subarr(arr, b, e) ::
+  let subarr = [];
+  arr = arr(arr);
+  while |subarr| + b <= |arr| and |subarr| + b <= e
+    subarr ++= arr_(|subarr| + b);
+  return subarr;
+;;
+
+fn subarr(arr, n) ::
+  return subarr(arr, 1, n);
+;;

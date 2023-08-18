@@ -63,6 +63,9 @@ PrimObjPtr PrimObj::mul(const PrimObjPtr &rhs) const {
 PrimObjPtr PrimObj::div(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '/' operator");
 }
+PrimObjPtr PrimObj::mod(const PrimObjPtr &rhs) const { 
+	throw runtime_error("Type does not support '%' operator");
+}
 PrimObjPtr PrimObj::pow(const PrimObjPtr &rhs) const { 
 	throw runtime_error("Type does not support '^' operator");
 }
@@ -132,6 +135,11 @@ PrimObjPtr IntObj::div(const PrimObjPtr &rhs) const {
     return make_shared<IntObj>(res);
   else
     return make_shared<DoubleObj>(res);
+}
+PrimObjPtr IntObj::mod(const PrimObjPtr &rhs) const { 
+  if (rhs->to_double() == 0)
+    throw runtime_error("Division by zero");
+  return make_shared<IntObj>(data % rhs->to_int());
 }
 PrimObjPtr IntObj::pow(const PrimObjPtr &rhs) const { 
   const double res = std::pow(data, rhs->to_double());
@@ -384,6 +392,23 @@ PrimObjPtr ArrObj::div(const PrimObjPtr &rhs) const {
   } else {
     for (auto &i : new_arr)
       i = i->div(rhs);
+  }
+
+	return make_shared<ArrObj>(new_arr);
+}
+PrimObjPtr ArrObj::mod(const PrimObjPtr &rhs) const { 
+  auto new_arr = data;
+  const auto rhs_arr = dynamic_pointer_cast<ArrObj>(rhs);
+  if (rhs_arr != nullptr) {
+    auto lhs_it = new_arr.begin();
+    auto rhs_it = rhs_arr->data.cbegin();
+    while (lhs_it != new_arr.end() && rhs_it != rhs_arr->data.cend()) {
+      *lhs_it = (*lhs_it)->add(*rhs_it);
+      ++lhs_it; ++rhs_it;
+    }
+  } else {
+    for (auto &i : new_arr)
+      i = i->mod(rhs);
   }
 
 	return make_shared<ArrObj>(new_arr);

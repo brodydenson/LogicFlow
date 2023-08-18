@@ -24,6 +24,8 @@ PrimObjPtr BinOp::eval(const EnvPtr &env) const {
 		return lhs->eval(env)->mul(rhs->eval(env));
 		case TokType::SLASH:
 		return lhs->eval(env)->div(rhs->eval(env));
+		case TokType::PERCENT:
+		return lhs->eval(env)->mod(rhs->eval(env));
 		case TokType::CARROT:
 		return lhs->eval(env)->pow(rhs->eval(env));
 		case TokType::GREATER:
