@@ -1,5 +1,5 @@
 # Logic Flow
-An interpreted language designed for **discrete math** purposes.
+An interpreted language but with cool **sets**.
 
 ## Status
 Currently in **early** stages of development. 
