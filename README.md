@@ -30,3 +30,29 @@ fn P(set) ::
     return subsets;
 ;;
 ```
+
+## Downloads
+
+- [logic_flow-v1.0.0-macos.zip](link-to-macos-binary)
+- [logic_flow-v1.0.0-linux.zip](link-to-linux-binary)
+- [logic_flow-v1.0.0-windows.zip](link-to-windows-binary)
+
+## Installation
+
+### macOS
+
+1. Download the `logic_flow-v1.0.0-macos.zip` file.
+2. Extract the zip file.
+3. Run the executable.
+
+### Linux
+
+1. Download the `logic_flow-v1.0.0-linux.zip` file.
+2. Extract the zip file.
+3. Run the executable.
+
+### Windows
+
+1. Download the `logic_flow-v1.0.0-windows.zip` file.
+2. Extract the zip file.
+3. Run the executable.
