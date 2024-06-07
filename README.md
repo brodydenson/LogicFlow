@@ -33,9 +33,9 @@ fn P(set) ::
 
 ## Downloads
 
-- [logic_flow-v1.0.0-macos.zip](link-to-macos-binary)
-- [logic_flow-v1.0.0-linux.zip](link-to-linux-binary)
-- [logic_flow-v1.0.0-windows.zip](link-to-windows-binary)
+- [logic_flow-v1.0.0-macos.zip](https://github.com/chipwy/LogicFlow/actions/runs/9424315128/artifacts/1580908724)
+- [logic_flow-v1.0.0-linux.zip](https://github.com/chipwy/LogicFlow/actions/runs/9424315128/artifacts/1580908726)
+- [logic_flow-v1.0.0-windows.zip](https://github.com/chipwy/LogicFlow/actions/runs/9424315128/artifacts/1580908728)
 
 ## Installation
 
