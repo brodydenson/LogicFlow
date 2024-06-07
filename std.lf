@@ -100,6 +100,7 @@ fn factorial(n) ::
 fn find(arr, k) ::
   for i in arr
     if i == k return IDX;
+  return -1;
 ;;
 
 fn subarr(arr, b, e) ::

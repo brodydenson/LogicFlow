@@ -1,6 +1,6 @@
 #include <map>
 #include <string>
-#include "include/Tok.h"
+#include "Tok.h"
 
 using std::map;
 using std::string;

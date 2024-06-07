@@ -4,11 +4,11 @@
 #include <string>
 #include <cmath>
 #include <algorithm>
-#include "include/Exception.h"
-#include "include/PrimObj.h"
-#include "include/Stmt.h"
-#include "include/Interpreter.h"
-#include "include/MySet.h"
+#include "Exception.h"
+#include "PrimObj.h"
+#include "Stmt.h"
+#include "Interpreter.h"
+#include "MySet.h"
 
 using std::to_string;
 using std::make_shared;

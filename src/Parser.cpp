@@ -2,12 +2,12 @@
 #include <memory>
 #include <stdexcept>
 #include <vector>
-#include "include/Exception.h"
-#include "include/Expr.h"
-#include "include/Env.h"
-#include "include/Parser.h"
-#include "include/PrimObj.h"
-#include "include/Interpreter.h"
+#include "Exception.h"
+#include "Expr.h"
+#include "Env.h"
+#include "Parser.h"
+#include "PrimObj.h"
+#include "Interpreter.h"
 
 using std::string;
 using std::to_string;

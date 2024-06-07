@@ -1,7 +1,7 @@
-#include "include/Expr.h"
-#include "include/Exception.h"
-#include "include/MySet.h"
-#include "include/Stmt.h"
+#include "Expr.h"
+#include "Exception.h"
+#include "MySet.h"
+#include "Stmt.h"
 
 using std::shared_ptr;
 using std::list;

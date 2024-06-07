@@ -1,7 +1,7 @@
 #include <list>
 #include <vector>
 #include <iostream>
-#include "include/MySet.h"
+#include "MySet.h"
 
 using std::list;
 using std::vector;

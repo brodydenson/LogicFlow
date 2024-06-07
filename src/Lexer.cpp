@@ -2,9 +2,9 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
-#include "include/Lexer.h"
-#include "include/Tok.h"
-#include "include/Exception.h"
+#include "Lexer.h"
+#include "Tok.h"
+#include "Exception.h"
 
 using std::string;
 using std::vector;

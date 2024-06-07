@@ -3,12 +3,13 @@
 #include <string>
 #include <sstream>
 #include <cctype>
-#include "include/Lexer.h"
-#include "include/Parser.h"
-#include "include/Interpreter.h"
+#include "Lexer.h"
+#include "Parser.h"
+#include "Interpreter.h"
 
 using std::cout;
 using std::cin;
+using std::endl;
 using std::string;
 using std::ifstream;
 using std::ostringstream;
@@ -38,10 +39,8 @@ int main() {
 	// }
 
   Interpreter::build_env();
-  interpret_file("std.lf");
-  interpret_file("main.lf");
-
-
+  interpret_file("../std.lf");
+  interpret_file("../main.lf");
 
 	return 0;
 }

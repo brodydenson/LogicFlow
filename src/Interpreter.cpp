@@ -1,7 +1,7 @@
-#include "include/Interpreter.h"
-#include "include/Exception.h"
-#include "include/Tok.h"
-#include "include/MySet.h"
+#include "Interpreter.h"
+#include "Exception.h"
+#include "Tok.h"
+#include "MySet.h"
 
 using std::cerr;
 using std::endl;
