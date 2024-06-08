@@ -33,9 +33,9 @@ fn P(set) ::
 
 ## Downloads
 
-- [logic_flow-v1.0.0-macos.zip](https://github.com/chipwy/LogicFlow/actions/runs/9424315128/artifacts/1580908724)
-- [logic_flow-v1.0.0-linux.zip](https://github.com/chipwy/LogicFlow/actions/runs/9424315128/artifacts/1580908726)
-- [logic_flow-v1.0.0-windows.zip](https://github.com/chipwy/LogicFlow/actions/runs/9424315128/artifacts/1580908728)
+- [logic_flow-v1.0.0-macos.zip](https://github.com/chipwy/LogicFlow/actions/runs/9425356180/artifacts/1581104795)
+- [logic_flow-v1.0.0-linux.zip](https://github.com/chipwy/LogicFlow/actions/runs/9425356180/artifacts/1581104796)
+- [logic_flow-v1.0.0-windows.zip](https://github.com/chipwy/LogicFlow/actions/runs/9425356180/artifacts/1581104799)
 
 ## Installation
 
@@ -43,16 +43,16 @@ fn P(set) ::
 
 1. Download the `logic_flow-v1.0.0-macos.zip` file.
 2. Extract the zip file.
-3. Run the executable.
+3. Run the executable in a terminal followed by the .lf file you want to run.
 
 ### Linux
 
 1. Download the `logic_flow-v1.0.0-linux.zip` file.
 2. Extract the zip file.
-3. Run the executable.
+3. Run the executable in a terminal followed by the .lf file you want to run.
 
 ### Windows
 
 1. Download the `logic_flow-v1.0.0-windows.zip` file.
 2. Extract the zip file.
-3. Run the executable.
+3. Run the executable in a terminal followed by the .lf file you want to run.
