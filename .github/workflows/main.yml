@@ -67,7 +67,8 @@ jobs:
         echo "CMake finished building"
         mkdir user-build
         mv ../std.lf user-build/
-        mv logic_flow.exe user-build/
+        ls
+        mv Debug/logic_flow.exe user-build/
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v2
