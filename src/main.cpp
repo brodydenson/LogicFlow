@@ -16,10 +16,6 @@ using std::ostringstream;
 
 string read_file(const string &path) {
   ifstream file(path);
-  if (!file) {
-    cout << "cannot find file: " << path << endl;
-    return "";
-  }
   ostringstream buffer;
   buffer << file.rdbuf();
   file.close();
@@ -54,7 +50,9 @@ int main(int argc, char *args[]) {
   
   if (!interpret_file("std.lf"))
     interpret_file("../std.lf");
-  interpret_file(args[1]);
+  if (!interpret_file(args[1]))
+    cout << "cannot find file: " << args[1] << endl;
+
 
 	return 0;
 }

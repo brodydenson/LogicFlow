@@ -34,6 +34,7 @@ jobs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
         cmake --build .
+        echo "CMake finished building"
         mkdir user-build
         mv ../std.lf user-build/
         [ -f logic_flow ] && mv logic_flow user-build/
