@@ -6,14 +6,46 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build-unix:
+  build-linux:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         include:
           - os: ubuntu-latest
             compiler: gcc
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup CMake
+      uses: lukka/get-cmake@latest
+      with:
+        cmakeVersion: latestrc
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake --build .
+        echo "CMake finished building"
+        mkdir user-build
+        mv ../std.lf user-build/
+        mv logic_flow user-build/
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: logic_flow-${{ matrix.os }}
+        path: build/user-build
+
+  build-macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        include:
           - os: macos-latest
             compiler: clang
 
@@ -35,6 +67,8 @@ jobs:
         mkdir user-build
         mv ../std.lf user-build/
         mv logic_flow user-build/
+        chmod +x user-build/logic_flow
+        xattr -d com.apple.quarantine user-build/logic_flow
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v2
@@ -67,7 +101,6 @@ jobs:
         echo "CMake finished building"
         mkdir user-build
         mv ../std.lf user-build/
-        ls
         mv Debug/logic_flow.exe user-build/
 
     - name: Archive build artifacts
