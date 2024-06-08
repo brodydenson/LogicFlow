@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: logic_flow-${{ matrix.os }}
-        path: build/
+        path: ./
 
   # release:
   #   needs: build

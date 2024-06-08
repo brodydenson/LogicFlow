@@ -16,6 +16,10 @@ using std::ostringstream;
 
 string read_file(const string &path) {
   ifstream file(path);
+  if (!file) {
+    cout << "cannot find file: " << path << endl;
+    return "";
+  }
   ostringstream buffer;
   buffer << file.rdbuf();
   file.close();
@@ -30,7 +34,7 @@ void interpret_file(const string &path) {
   Interpreter::interpret();
 }
 
-int main() {
+int main(int argc, char *args[]) {
  //  string line;
 	// while (cout << ">> " && getline(cin, line) && line != "exit") {
  //    Parser parser(line);
@@ -38,9 +42,15 @@ int main() {
  //    Interpreter::interpret();
 	// }
 
+
+  if (argc != 2) {
+    cout << "please enter (1) file as argument (file type must be .lf)" << endl;
+    return 0;
+  }
+
   Interpreter::build_env();
   interpret_file("../std.lf");
-  interpret_file("../main.lf");
+  interpret_file(args[1]);
 
 	return 0;
 }
