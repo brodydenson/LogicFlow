@@ -35,7 +35,6 @@ jobs:
         mkdir user-build
         mv ../std.lf user-build/
         mv logic_flow user-build/
-        chmod +x user-build/logic_flow
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v2
