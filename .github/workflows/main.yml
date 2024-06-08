@@ -6,19 +6,16 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build:
-
+  build-unix:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         include:
           - os: ubuntu-latest
             compiler: gcc
           - os: macos-latest
             compiler: clang
-          - os: windows-latest
-            compiler: msvc
 
     steps:
     - uses: actions/checkout@v2
@@ -37,16 +34,40 @@ jobs:
         echo "CMake finished building"
         mkdir user-build
         mv ../std.lf user-build/
-        if [ -f "logic_flow" ]; then
-          # Move the file to the destination
-          mv logic_flow user-build/
-          echo "1"
-        else
-          mv logic_flow.exe user-build/
-          echo "2"
-        fi
-        [ -f logic_flow ] && mv logic_flow user-build/
-        [ -f logic_flow.exe ] && mv logic_flow.exe user-build/
+        mv logic_flow user-build/
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: logic_flow-${{ matrix.os }}
+        path: build/user-build
+
+  build-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        include:
+          - os: windows-latest
+            compiler: msvc
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup CMake
+      uses: lukka/get-cmake@latest
+      with:
+        cmakeVersion: latestrc
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake --build .
+        echo "CMake finished building"
+        mkdir user-build
+        mv ../std.lf user-build/
+        mv logic_flow.exe user-build/
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v2
