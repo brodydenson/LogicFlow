@@ -36,7 +36,8 @@ jobs:
         cmake --build .
         mkdir user-build
         mv ../std.lf user-build/
-        mv logic_flow user-build/
+        [ -f logic_flow ] && mv logic_flow user-build/
+        [ -f logic_flow.exe ] && mv logic_flow.exe user-build/
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v2
