@@ -37,6 +37,14 @@ jobs:
         echo "CMake finished building"
         mkdir user-build
         mv ../std.lf user-build/
+        if [ -f "logic_flow" ]; then
+          # Move the file to the destination
+          mv logic_flow user-build/
+          echo "1"
+        else
+          mv logic_flow.exe user-build/
+          echo "2"
+        fi
         [ -f logic_flow ] && mv logic_flow user-build/
         [ -f logic_flow.exe ] && mv logic_flow.exe user-build/
 
