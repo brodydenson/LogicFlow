@@ -34,12 +34,15 @@ jobs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
         cmake --build .
+        mkdir user-build
+        mv ../std.lf user-build/
+        mv logic_flow user-build/
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v2
       with:
         name: logic_flow-${{ matrix.os }}
-        path: ./
+        path: build/user-build
 
   # release:
   #   needs: build

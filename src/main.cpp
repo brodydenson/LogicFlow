@@ -26,12 +26,14 @@ string read_file(const string &path) {
   return buffer.str();
 }
 
-void interpret_file(const string &path) {
+bool interpret_file(const string &path) {
   const string content = read_file(path);
+  if (content == "") return false;
 
   Parser parser(content);
   Interpreter::set_parser(parser);
   Interpreter::interpret();
+  return true;
 }
 
 int main(int argc, char *args[]) {
@@ -49,7 +51,9 @@ int main(int argc, char *args[]) {
   }
 
   Interpreter::build_env();
-  interpret_file("../std.lf");
+  
+  if (!interpret_file("std.lf"))
+    interpret_file("../std.lf");
   interpret_file(args[1]);
 
 	return 0;
