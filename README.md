@@ -1,5 +1,6 @@
 # Logic Flow
-An interpreted language but with cool **sets**.
+Logic Flow is an interpreted language built for mathematics. It allows developers to easily write in the language of mathematics instead of always thinking in finite terms. 
+Topics that Logic Flow tries to make easy: **linear algebra, statistical analysis, discrete mathematics, and developing algorithms**.
 
 ## Status
 Currently in **early** stages of development. 
